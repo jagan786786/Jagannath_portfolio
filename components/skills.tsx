@@ -1,20 +1,34 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Code, Database, Globe, Wrench } from "lucide-react"
+import { motion } from "framer-motion";
+import { Code, Database, Globe, Wrench } from "lucide-react";
 
 export default function Skills() {
   const skillCategories = [
     {
       title: "Programming Languages",
       icon: <Code className="text-blue-400" size={24} />,
-      skills: ["Java", "Python", "JavaScript", "PHP"],
+      skills: ["Java", "Python", "C"],
       color: "from-blue-500 to-cyan-500",
     },
     {
       title: "Web Technologies",
       icon: <Globe className="text-green-400" size={24} />,
-      skills: ["HTML", "CSS", "React.js", "Next.js", "Node.js", "Express.js", "Flutter", "SpringBoot"],
+      skills: [
+        "HTML",
+        "CSS",
+        "Javascript",
+        "PHP",
+        "React.js",
+        "Next.js",
+        "Node.js",
+        "Express.js",
+        "Flutter",
+        "SpringBoot",
+        "React Native",
+        "Nest.js",
+        "Tailwind CSS",
+      ],
       color: "from-green-500 to-emerald-500",
     },
     {
@@ -26,10 +40,17 @@ export default function Skills() {
     {
       title: "Tools & Concepts",
       icon: <Wrench className="text-orange-400" size={24} />,
-      skills: ["Git", "GitBash", "Data Structures", "Algorithms", "OOP", "DBMS"],
+      skills: [
+        "Git",
+        "GitBash",
+        "Data Structures",
+        "Algorithms",
+        "OOP",
+        "DBMS",
+      ],
       color: "from-orange-500 to-red-500",
     },
-  ]
+  ];
 
   const certifications = [
     "Java Basics (HackerRank)",
@@ -38,7 +59,7 @@ export default function Skills() {
     "4-star rating in Java (HackerRank)",
     "Object Oriented PHP and MVC",
     "3-star rating in SQL (HackerRank)",
-  ]
+  ];
 
   return (
     <section id="skills" className="py-20 px-4 bg-gray-900">
@@ -53,7 +74,9 @@ export default function Skills() {
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
             Skills & Expertise
           </h2>
-          <p className="text-xl text-gray-300">Technologies and tools I work with</p>
+          <p className="text-xl text-gray-300">
+            Technologies and tools I work with
+          </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
@@ -74,7 +97,9 @@ export default function Skills() {
               <div className="space-y-2">
                 {category.skills.map((skill, skillIndex) => (
                   <div key={skill} className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${category.color}`} />
+                    <div
+                      className={`w-2 h-2 rounded-full bg-gradient-to-r ${category.color}`}
+                    />
                     <span className="text-gray-300">{skill}</span>
                   </div>
                 ))}
@@ -90,7 +115,9 @@ export default function Skills() {
           viewport={{ once: true }}
           className="bg-gray-800 p-8 rounded-lg"
         >
-          <h3 className="text-2xl font-bold mb-6 text-center text-blue-400">Certifications & Achievements</h3>
+          <h3 className="text-2xl font-bold mb-6 text-center text-blue-400">
+            Certifications & Achievements
+          </h3>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {certifications.map((cert, index) => (
@@ -109,5 +136,5 @@ export default function Skills() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

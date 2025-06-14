@@ -1,8 +1,16 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import Navigation from "@/components/navigation"
-import { ExternalLink, Github, ShoppingCart, MessageCircle, GraduationCap, Globe } from "lucide-react"
+import { motion } from "framer-motion";
+import Navigation from "@/components/navigation";
+import {
+  ExternalLink,
+  Github,
+  ShoppingCart,
+  MessageCircle,
+  GraduationCap,
+  Globe,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function ProjectsPage() {
   const projects = [
@@ -27,6 +35,8 @@ export default function ProjectsPage() {
       ],
       status: "Completed",
       duration: "3 months",
+      github: "https://github.com/jagan786786/Ecommerce-Website",
+      live: "https://ecommerce-demo.vercel.app",
     },
     {
       id: 2,
@@ -35,7 +45,14 @@ export default function ProjectsPage() {
         "A real-time chat application with live communication, responsive UI, and secure user authentication using JWT and bcrypt. Supports group chats, file sharing, and message history.",
       longDescription:
         "A modern chat application built with Node.js and WebSockets for real-time communication. Features include private messaging, group chats, file sharing, emoji support, and message encryption for enhanced security.",
-      technologies: ["Node.js", "Express", "MongoDB", "WebSockets", "JWT", "React"],
+      technologies: [
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "WebSockets",
+        "JWT",
+        "React",
+      ],
       icon: <MessageCircle className="text-green-400" size={32} />,
       color: "from-green-500 to-emerald-500",
       image: "/placeholder.svg?height=300&width=500",
@@ -49,6 +66,8 @@ export default function ProjectsPage() {
       ],
       status: "Completed",
       duration: "2 months",
+      github: "https://github.com/jagan786786/chat_application",
+      live: "https://ecommerce-demo.vercel.app",
     },
     {
       id: 3,
@@ -57,7 +76,13 @@ export default function ProjectsPage() {
         "A comprehensive portal for students, faculty, and administrators with course registration, attendance tracking, and grade management. Built with modern full-stack technologies.",
       longDescription:
         "An integrated university management system that streamlines academic processes. The portal serves different user roles with tailored dashboards, course management, grade tracking, and communication tools.",
-      technologies: ["Next.js", "TypeScript", "SpringBoot", "PostgreSQL", "Tailwind CSS"],
+      technologies: [
+        "Next.js",
+        "TypeScript",
+        "SpringBoot",
+        "PostgreSQL",
+        "Tailwind CSS",
+      ],
       icon: <GraduationCap className="text-purple-400" size={32} />,
       color: "from-purple-500 to-pink-500",
       image: "/placeholder.svg?height=300&width=500",
@@ -69,32 +94,12 @@ export default function ProjectsPage() {
         "Timetable and scheduling",
         "Announcements and notifications",
       ],
-      status: "In Progress",
-      duration: "4 months",
-    },
-    {
-      id: 4,
-      title: "Tour & Travel Website",
-      description:
-        "A comprehensive digital platform designed to simplify trip planning, booking, and management. Features destination exploration, personalized itineraries, and local recommendations.",
-      longDescription:
-        "Built during my internship at Bharat Intern, this travel platform helps users discover destinations, plan trips, and book accommodations. Includes interactive maps, weather integration, and social features.",
-      technologies: ["React", "Node.js", "Express", "MongoDB", "Maps API"],
-      icon: <Globe className="text-orange-400" size={32} />,
-      color: "from-orange-500 to-red-500",
-      image: "/placeholder.svg?height=300&width=500",
-      features: [
-        "Destination discovery and exploration",
-        "Personalized trip planning",
-        "Hotel and flight booking integration",
-        "Interactive maps and navigation",
-        "Weather and local information",
-        "User reviews and recommendations",
-      ],
       status: "Completed",
-      duration: "2 months",
+      duration: "4 months",
+      github: "https://github.com/jagan786786/unidashboard",
+      live: "https://ecommerce-demo.vercel.app",
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -138,7 +143,9 @@ export default function ProjectsPage() {
                     <div className="absolute top-4 right-4">
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          project.status === "Completed" ? "bg-green-600 text-white" : "bg-yellow-600 text-white"
+                          project.status === "Completed"
+                            ? "bg-green-600 text-white"
+                            : "bg-yellow-600 text-white"
                         }`}
                       >
                         {project.status}
@@ -153,13 +160,20 @@ export default function ProjectsPage() {
                       <h2 className="text-3xl font-bold">{project.title}</h2>
                     </div>
 
-                    <p className="text-gray-300 leading-relaxed">{project.longDescription}</p>
+                    <p className="text-gray-300 leading-relaxed">
+                      {project.longDescription}
+                    </p>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-blue-400 mb-3">Key Features:</h3>
+                      <h3 className="text-lg font-semibold text-blue-400 mb-3">
+                        Key Features:
+                      </h3>
                       <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {project.features.map((feature, i) => (
-                          <li key={i} className="flex items-start gap-2 text-gray-300">
+                          <li
+                            key={i}
+                            className="flex items-start gap-2 text-gray-300"
+                          >
                             <div
                               className={`w-2 h-2 rounded-full bg-gradient-to-r ${project.color} mt-2 flex-shrink-0`}
                             />
@@ -170,10 +184,15 @@ export default function ProjectsPage() {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-purple-400 mb-3">Technologies Used:</h3>
+                      <h3 className="text-lg font-semibold text-purple-400 mb-3">
+                        Technologies Used:
+                      </h3>
                       <div className="flex flex-wrap gap-2">
                         {project.technologies.map((tech) => (
-                          <span key={tech} className="px-3 py-1 bg-gray-700 text-sm rounded-full text-gray-300">
+                          <span
+                            key={tech}
+                            className="px-3 py-1 bg-gray-700 text-sm rounded-full text-gray-300"
+                          >
                             {tech}
                           </span>
                         ))}
@@ -185,13 +204,31 @@ export default function ProjectsPage() {
                     </div>
 
                     <div className="flex gap-4 pt-4">
-                      <button className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-300">
-                        <ExternalLink size={18} />
-                        Live Demo
-                      </button>
-                      <button className="flex items-center gap-2 px-6 py-3 border border-gray-600 hover:bg-gray-700 rounded-lg transition-colors duration-300">
+                      {/* {project.live && (
+                        <a
+                          href={project.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-300"
+                        >
+                          <ExternalLink size={18} />
+                          Live Demo
+                        </a>
+                      )} */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          console.log("Button clicked", project.github);
+                          window.open(
+                            project.github,
+                            "_blank",
+                            "noopener,noreferrer"
+                          );
+                        }}
+                        className="flex items-center gap-2 px-6 py-3 border border-gray-600 hover:bg-gray-700 rounded-lg transition-colors duration-300"
+                      >
                         <Github size={18} />
-                        Source Code
+                        Code
                       </button>
                     </div>
                   </div>
@@ -202,5 +239,5 @@ export default function ProjectsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

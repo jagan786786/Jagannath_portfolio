@@ -1,7 +1,13 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ExternalLink, Github, ShoppingCart, MessageCircle, GraduationCap } from "lucide-react"
+import { motion } from "framer-motion";
+import {
+  ExternalLink,
+  Github,
+  ShoppingCart,
+  MessageCircle,
+  GraduationCap,
+} from "lucide-react";
 
 export default function Projects() {
   const projects = [
@@ -12,6 +18,8 @@ export default function Projects() {
       technologies: ["HTML", "CSS", "JavaScript", "PHP", "MySQL"],
       icon: <ShoppingCart className="text-blue-400" size={32} />,
       color: "from-blue-500 to-cyan-500",
+      github: "https://github.com/jagan786786/chat_application",
+      live: "https://ecommerce-demo.vercel.app",
     },
     {
       title: "Real-time Chat Application",
@@ -20,6 +28,8 @@ export default function Projects() {
       technologies: ["Node.js", "Express", "MongoDB", "WebSockets", "JWT"],
       icon: <MessageCircle className="text-green-400" size={32} />,
       color: "from-green-500 to-emerald-500",
+      github: "https://github.com/jagan786786/Ecommerce-Website",
+      live: "https://ecommerce-demo.vercel.app",
     },
     {
       title: "University Portal & Dashboard",
@@ -28,8 +38,10 @@ export default function Projects() {
       technologies: ["Next.js", "TypeScript", "SpringBoot", "PostgreSQL"],
       icon: <GraduationCap className="text-purple-400" size={32} />,
       color: "from-purple-500 to-pink-500",
+      github: "https://github.com/jagan786786/unidashboard",
+      live: "https://ecommerce-demo.vercel.app",
     },
-  ]
+  ];
 
   return (
     <section id="projects" className="py-20 px-4 bg-gray-800">
@@ -44,7 +56,9 @@ export default function Projects() {
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
             Featured Projects
           </h2>
-          <p className="text-xl text-gray-300">Some of the projects I've worked on</p>
+          <p className="text-xl text-gray-300">
+            Some of the projects I've worked on
+          </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -65,13 +79,20 @@ export default function Projects() {
                   <h3 className="text-xl font-bold">{project.title}</h3>
                 </div>
 
-                <p className="text-gray-300 mb-6 leading-relaxed">{project.description}</p>
+                <p className="text-gray-300 mb-6 leading-relaxed">
+                  {project.description}
+                </p>
 
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-gray-400 mb-2">Technologies Used:</h4>
+                  <h4 className="text-sm font-semibold text-gray-400 mb-2">
+                    Technologies Used:
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {project.technologies.map((tech) => (
-                      <span key={tech} className="px-3 py-1 bg-gray-700 text-xs rounded-full text-gray-300">
+                      <span
+                        key={tech}
+                        className="px-3 py-1 bg-gray-700 text-xs rounded-full text-gray-300"
+                      >
                         {tech}
                       </span>
                     ))}
@@ -79,12 +100,23 @@ export default function Projects() {
                 </div>
 
                 <div className="flex gap-4">
-                  <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-300 text-sm">
+                  {/* <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-300 text-sm">
                     <ExternalLink size={16} />
                     Live Demo
-                  </button>
-                  <button className="flex items-center gap-2 px-4 py-2 border border-gray-600 hover:bg-gray-700 rounded-lg transition-colors duration-300 text-sm">
-                    <Github size={16} />
+                  </button> */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      console.log("Button clicked", project.github);
+                      window.open(
+                        project.github,
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                    }}
+                    className="flex items-center gap-2 px-6 py-3 border border-gray-600 hover:bg-gray-700 rounded-lg transition-colors duration-300"
+                  >
+                    <Github size={18} />
                     Code
                   </button>
                 </div>
@@ -94,5 +126,5 @@ export default function Projects() {
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -12,8 +12,8 @@ export default function SkillsPage() {
       skills: [
         { name: "Java", level: 90, experience: "2+ years" },
         { name: "Python", level: 85, experience: "2+ years" },
-        { name: "JavaScript", level: 88, experience: "2+ years" },
-        { name: "PHP", level: 75, experience: "1+ year" },
+        { name: "C", level: 88, experience: "2 years" },
+        
       ],
       color: "from-blue-500 to-cyan-500",
     },
@@ -21,13 +21,17 @@ export default function SkillsPage() {
       title: "Web Technologies",
       icon: <Globe className="text-green-400" size={32} />,
       skills: [
-        { name: "HTML/CSS", level: 95, experience: "3+ years" },
+        { name: "HTML nad CSS", level: 95, experience: "3+ years" },
+        { name: "Javascript", level: 95, experience: "3+ years" },
+        { name:  "Tailwind CSS", level: 80, experience: "2 years" },
         { name: "React.js", level: 88, experience: "2+ years" },
         { name: "Next.js", level: 82, experience: "1+ year" },
         { name: "Node.js", level: 85, experience: "2+ years" },
         { name: "Express.js", level: 80, experience: "1+ year" },
-        { name: "Flutter", level: 70, experience: "1 year" },
+        { name: "React Native", level: 70, experience: "1 year" },
         { name: "SpringBoot", level: 75, experience: "1+ year" },
+        { name: "PHP ", level: 90, experience: "3 year" },
+        { name: "nest.js", level: 70, experience: "1 year" },
       ],
       color: "from-green-500 to-emerald-500",
     },
@@ -164,7 +168,7 @@ export default function SkillsPage() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="bg-gray-800 p-8 rounded-lg"
+            className="bg-gray-800 p-8 rounded-lg "
           >
             <h2 className="text-3xl font-bold mb-8 text-center text-blue-400 flex items-center justify-center gap-3">
               <Award size={32} />
@@ -203,7 +207,7 @@ export default function SkillsPage() {
             transition={{ duration: 0.8, delay: 1.2 }}
             className="mt-12 text-center"
           >
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
               <div className="bg-gray-800 p-6 rounded-lg">
                 <h3 className="text-3xl font-bold text-blue-400 mb-2">15+</h3>
                 <p className="text-gray-300">Technologies</p>

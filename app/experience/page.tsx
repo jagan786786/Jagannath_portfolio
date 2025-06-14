@@ -214,7 +214,7 @@ export default function ExperiencePage() {
             transition={{ duration: 0.8, delay: 1.2 }}
             className="mt-12 text-center"
           >
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 mb-6">
               <div className="bg-gray-800 p-6 rounded-lg">
                 <h3 className="text-3xl font-bold text-blue-400 mb-2">2</h3>
                 <p className="text-gray-300">Internships Completed</p>

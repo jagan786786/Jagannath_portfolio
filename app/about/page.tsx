@@ -145,7 +145,7 @@ export default function AboutPage() {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="mt-12 text-center"
           >
-            <div className="flex items-center justify-center gap-2 text-blue-400">
+            <div className="flex items-center justify-center gap-2 text-blue-400 mb-4">
               <MapPin size={24} />
               <span className="text-xl">Based in Odisha, Gunupur, India</span>
             </div>

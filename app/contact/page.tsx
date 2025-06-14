@@ -1,11 +1,21 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { motion } from "framer-motion"
-import Navigation from "@/components/navigation"
-import { Mail, Phone, MapPin, Linkedin, Send, MessageSquare, Clock, User } from "lucide-react"
-import { useState } from "react"
+import { motion } from "framer-motion";
+import Navigation from "@/components/navigation";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Linkedin,
+  Send,
+  MessageSquare,
+  Clock,
+  User,
+  Github,
+} from "lucide-react";
+import { useState } from "react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,33 +23,55 @@ export default function ContactPage() {
     email: "",
     subject: "",
     message: "",
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const response = await fetch(
+        "https://formspree.io/f/mqabbkgr",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+          }),
+        }
+      );
 
-    console.log("Form submitted:", formData)
-    setIsSubmitting(false)
+      if (response.ok) {
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        alert("Message sent successfully! I'll get back to you soon.");
+      } else {
+        alert("Something went wrong. Please try again later.");
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again.");
+    }
 
-    // Reset form
-    setFormData({ name: "", email: "", subject: "", message: "" })
+    setIsSubmitting(false);
+  };
 
-    // Show success message (you can implement a toast notification here)
-    alert("Message sent successfully! I'll get back to you soon.")
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   const contactInfo = [
     {
@@ -65,12 +97,19 @@ export default function ContactPage() {
     },
     {
       icon: <Linkedin className="text-blue-500" size={24} />,
+      label: "GitHub",
+      value: "See my work",
+      href: "https://github.com/jagan786786?tab=repositories",
+      color: "bg-blue-500",
+    },
+    {
+      icon: <Github className="text-blue-500" size={24} />,
       label: "LinkedIn",
       value: "Connect with me",
       href: "https://linkedin.com/in/jagannath-patro-37a192250/",
       color: "bg-blue-500",
     },
-  ]
+  ];
 
   const quickContact = [
     {
@@ -88,7 +127,7 @@ export default function ContactPage() {
       description: "Let's discuss your next project idea",
       icon: <MessageSquare className="text-blue-400" size={24} />,
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -106,8 +145,8 @@ export default function ContactPage() {
               Get In Touch
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Let's discuss opportunities, collaborate on exciting projects, or just have a conversation about
-              technology
+              Let's discuss opportunities, collaborate on exciting projects, or
+              just have a conversation about technology
             </p>
           </motion.div>
 
@@ -118,8 +157,11 @@ export default function ContactPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="grid md:grid-cols-3 gap-6 mb-16"
           >
-            {quickContact.map((item, index) => (
-              <div key={item.title} className="bg-gray-800 p-6 rounded-lg text-center">
+            {quickContact.map((item) => (
+              <div
+                key={item.title}
+                className="bg-gray-800 p-6 rounded-lg text-center"
+              >
                 <div className="flex justify-center mb-4">{item.icon}</div>
                 <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
                 <p className="text-gray-400 text-sm">{item.description}</p>
@@ -136,20 +178,29 @@ export default function ContactPage() {
               className="space-y-8"
             >
               <div>
-                <h2 className="text-3xl font-bold mb-6 text-blue-400">Contact Information</h2>
+                <h2 className="text-3xl font-bold mb-6 text-blue-400">
+                  Contact Information
+                </h2>
                 <p className="text-gray-300 mb-8 leading-relaxed">
-                  I'm always interested in hearing about new opportunities, whether it's a full-time position, freelance
-                  project, or just a chat about technology. Feel free to reach out!
+                  I'm always interested in hearing about new opportunities,
+                  whether it's a full-time position, freelance project, or just
+                  a chat about technology. Feel free to reach out!
                 </p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {contactInfo.map((contact, index) => (
                   <motion.a
                     key={contact.label}
                     href={contact.href}
-                    target={contact.href.startsWith("http") ? "_blank" : "_self"}
-                    rel={contact.href.startsWith("http") ? "noopener noreferrer" : ""}
+                    target={
+                      contact.href.startsWith("http") ? "_blank" : "_self"
+                    }
+                    rel={
+                      contact.href.startsWith("http")
+                        ? "noopener noreferrer"
+                        : ""
+                    }
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
@@ -168,26 +219,33 @@ export default function ContactPage() {
                 ))}
               </div>
 
-              {/* Availability */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1 }}
                 className="bg-gray-800 p-6 rounded-lg"
               >
-                <h3 className="text-xl font-semibold mb-4 text-green-400">Current Availability</h3>
+                <h3 className="text-xl font-semibold mb-4 text-green-400">
+                  Current Availability
+                </h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-                    <span className="text-gray-300">Available for new opportunities</span>
+                    <span className="text-gray-300">
+                      Available for new opportunities
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-blue-400 rounded-full" />
-                    <span className="text-gray-300">Open to freelance projects</span>
+                    <span className="text-gray-300">
+                      Open to freelance projects
+                    </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-purple-400 rounded-full" />
-                    <span className="text-gray-300">Interested in collaborations</span>
+                    <span className="text-gray-300">
+                      Interested in collaborations
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -200,12 +258,17 @@ export default function ContactPage() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="bg-gray-800 p-8 rounded-lg"
             >
-              <h2 className="text-3xl font-bold mb-6 text-purple-400">Send a Message</h2>
+              <h2 className="text-3xl font-bold mb-11 text-purple-400">
+                Send a Message
+              </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
                       Full Name *
                     </label>
                     <input
@@ -221,7 +284,10 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
                       Email Address *
                     </label>
                     <input
@@ -238,7 +304,10 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label
+                    htmlFor="subject"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
                     Subject *
                   </label>
                   <select
@@ -259,7 +328,10 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
                     Message *
                   </label>
                   <textarea
@@ -295,17 +367,19 @@ export default function ContactPage() {
             </motion.div>
           </div>
 
-          {/* Footer */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
             className="text-center mt-16 pt-8 border-t border-gray-700"
           >
-            <p className="text-gray-400">© 2024 Jagannath Patro. Built with Next.js, Three.js, and lots of ☕</p>
+            <p className="text-gray-400">
+              © {new Date().getFullYear()} Jagannath Patro.
+              
+            </p>
           </motion.div>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,30 +1,48 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { motion } from "framer-motion"
-import { Mail, Phone, MapPin, Linkedin, Send } from "lucide-react"
-import { useState } from "react"
+import type React from "react";
+import { motion } from "framer-motion";
+import { Mail, Phone, MapPin, Linkedin, Send, Github } from "lucide-react";
+import { useState } from "react";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    subject: "",
     message: "",
-  })
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission here
-    console.log("Form submitted:", formData)
-  }
+  const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const res = await fetch("https://formspree.io/f/mqabbkgr", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (res.ok) {
+      setSubmitted(true);
+      setFormData({ name: "", email: "",subject:"", message: "" });
+    } else {
+      alert("Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <section id="contact" className="py-20 px-4 bg-gray-800">
@@ -39,7 +57,9 @@ export default function Contact() {
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
             Get In Touch
           </h2>
-          <p className="text-xl text-gray-300">Let's discuss opportunities and collaborate on exciting projects</p>
+          <p className="text-xl text-gray-300">
+            Let's discuss opportunities and collaborate on exciting projects
+          </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-12">
@@ -49,9 +69,11 @@ export default function Contact() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-2xl font-bold mb-6 text-blue-400">Contact Information</h3>
+            <h3 className="text-2xl font-bold mb-6 text-blue-400">
+              Contact Information
+            </h3>
 
-            <div className="space-y-6">
+            <div className="space-y-2">
               <div className="flex items-center gap-4 p-4 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-300">
                 <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                   <Mail className="text-white" size={20} />
@@ -98,6 +120,23 @@ export default function Contact() {
                   </a>
                 </div>
               </div>
+
+              <div className="flex items-center gap-4 p-4 bg-gray-900 rounded-lg hover:bg-gray-700 transition-colors duration-300">
+                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <Github className="text-white" size={20} />
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm">GitHub</p>
+                  <a
+                    href="https://github.com/jagan786786?tab=repositories"
+                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    See my work
+                  </a>
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -109,7 +148,10 @@ export default function Contact() {
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Name
                 </label>
                 <input
@@ -125,7 +167,10 @@ export default function Contact() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Email
                 </label>
                 <input
@@ -141,7 +186,33 @@ export default function Contact() {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="subject"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
+                  Subject *
+                </label>
+                <select
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white transition-colors duration-300"
+                >
+                  <option value="">Select a subject</option>
+                  <option value="job-opportunity">Job Opportunity</option>
+                  <option value="freelance-project">Freelance Project</option>
+                  <option value="collaboration">Collaboration</option>
+                  <option value="general-inquiry">General Inquiry</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-medium text-gray-300 mb-2"
+                >
                   Message
                 </label>
                 <textarea
@@ -161,7 +232,7 @@ export default function Contact() {
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg transition-all duration-300 font-medium"
               >
                 <Send size={20} />
-                Send Message
+                {submitted ? "Message Sent!" : "Send Message"}
               </button>
             </form>
           </motion.div>
@@ -174,9 +245,11 @@ export default function Contact() {
           viewport={{ once: true }}
           className="text-center mt-16 pt-8 border-t border-gray-700"
         >
-          <p className="text-gray-400">© 2024 Jagannath Patro. Built with Next.js and Three.js</p>
+          <p className="text-gray-400">
+            © {new Date().getFullYear()} Jagannath Patro.{" "}
+          </p>
         </motion.div>
       </div>
     </section>
-  )
+  );
 }
