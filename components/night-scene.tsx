@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 /*
   Cinematic hero scene: Jagannath at his desk at night, seen from behind his
   right shoulder, back-lit by the monitor. City lights through the window,
-  live code typing on screen, a laptop with eval scores, chai, and a glowing
+  live code typing on screen, a laptop with eval scores, and a glowing
   Earth in the foreground. Everything is vector + SVG filters (blur, grain),
   so it stays sharp and light.
 
@@ -80,32 +80,46 @@ function useTyping(visible: React.MutableRefObject<boolean>) {
   const [si, setSi] = useState(0)
   const [typed, setTyped] = useState(0)
   const [phase, setPhase] = useState<"typing" | "running" | "done">("typing")
+  const [thinking, setThinking] = useState(false)
   const snip = SNIPPETS[si]
   const total = snip.code.length
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setTyped(total); setPhase("done"); return }
     if (phase === "typing") {
+      // He stops to think at each blank line (between blocks of code), hand on chin.
+      const pauses = new Set<number>()
+      for (let i = 1; i < snip.code.length; i++) if (snip.code[i] === "\n" && snip.code[i - 1] === "\n") pauses.add(i)
+      let t = 0
+      let held = false
+      let timer: ReturnType<typeof setTimeout> | undefined
       const id = setInterval(() => {
-        if (!visible.current) return
-        setTyped((t) => {
-          const next = snip.code[t] === " " ? t + 3 : t + 1 + (Math.random() > 0.8 ? 1 : 0)
-          if (next >= total) { clearInterval(id); setPhase("running"); return total }
-          return next
-        })
+        if (!visible.current || held) return
+        let next = snip.code[t] === " " ? t + 3 : t + 1 + (Math.random() > 0.8 ? 1 : 0)
+        const stop = [...pauses].find((p) => p > t && p <= next)
+        if (stop !== undefined) {
+          next = stop
+          pauses.delete(stop)
+          held = true
+          setThinking(true)
+          timer = setTimeout(() => { held = false; setThinking(false) }, 2600)
+        }
+        if (next >= total) { clearInterval(id); setTyped(total); setPhase("running"); return }
+        t = next
+        setTyped(next)
       }, 34)
-      return () => clearInterval(id)
+      return () => { clearInterval(id); if (timer) clearTimeout(timer); setThinking(false) }
     }
     if (phase === "running") { const t = setTimeout(() => setPhase("done"), 1400); return () => clearTimeout(t) }
     const t = setTimeout(() => { setSi((i) => (i + 1) % SNIPPETS.length); setTyped(0); setPhase("typing") }, 3200)
     return () => clearTimeout(t)
   }, [phase, snip, total, visible])
 
-  return { snip, typed, phase, si }
+  return { snip, typed, phase, si, thinking }
 }
 
 /* Editor drawn in its own 300 x 198 space, placed on the monitor with a nested <svg>. */
-function Editor({ snip, typed, phase, si }: ReturnType<typeof useTyping>) {
+function Editor({ snip, typed, phase, si, thinking }: ReturnType<typeof useTyping>) {
   const FS = 7.4, CW = FS * 0.6, LH = 11.6, X = 68, Y = 32
   const lines = useMemo(() => snip.code.split("\n"), [snip])
   let start = 0
@@ -137,7 +151,7 @@ function Editor({ snip, typed, phase, si }: ReturnType<typeof useTyping>) {
               <text x={X} y={Y + i * LH} xmlSpace="preserve">{highlight(l).map(([t, c], k) => <tspan key={k} fill={c}>{t}</tspan>)}</text>
             </g>
           ))}
-          {phase === "typing" && <rect x={X + shown[cur].length * CW + 0.5} y={Y + cur * LH - FS + 1} width="1.2" height={FS + 1} fill="#e9e4ff" className="caret" />}
+          {phase === "typing" && <rect x={X + shown[cur].length * CW + 0.5} y={Y + cur * LH - FS + 1} width="1.2" height={FS + 1} fill="#e9e4ff" className={thinking ? "caret" : undefined} />}
         </g>
       </g>
       <rect x="46" y="172" width="254" height="26" fill="#07061a" />
@@ -192,6 +206,9 @@ export default function NightScene({ className = "", crop = false }: { className
   }, [])
 
   const vb = crop ? "620 140 980 760" : "0 0 1600 1000"
+  // Left arm: typing on the keyboard, or up at the chin while thinking.
+  const armD = typing.thinking ? "M388 372 L 352 456 L 402 318" : "M388 372 L 358 456 L 318 404"
+  const rimD = typing.thinking ? "M376 382 L 346 450" : "M376 382 L 352 450"
 
   return (
     <div ref={wrap} className={className}>
@@ -234,6 +251,38 @@ export default function NightScene({ className = "", crop = false }: { className
             <stop offset="0" stopColor="#a87358" />
             <stop offset="0.35" stopColor="#5e3a28" />
             <stop offset="1" stopColor="#2a1a12" />
+          </linearGradient>
+          <linearGradient id="ns-metal" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#4d4866" />
+            <stop offset="0.5" stopColor="#2a2640" />
+            <stop offset="1" stopColor="#141221" />
+          </linearGradient>
+          <linearGradient id="ns-bezel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#24212f" />
+            <stop offset="1" stopColor="#0b0a12" />
+          </linearGradient>
+          <linearGradient id="ns-glass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#fff" stopOpacity="0.07" />
+            <stop offset="0.35" stopColor="#fff" stopOpacity="0.015" />
+            <stop offset="0.36" stopColor="#fff" stopOpacity="0" />
+            <stop offset="1" stopColor="#fff" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="ns-key" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#3b3560" />
+            <stop offset="1" stopColor="#1d1934" />
+          </linearGradient>
+          <linearGradient id="ns-kbd" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#24203a" />
+            <stop offset="1" stopColor="#100d1e" />
+          </linearGradient>
+          <linearGradient id="ns-rgb" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#7c5cff" />
+            <stop offset="0.5" stopColor="#22d3ee" />
+            <stop offset="1" stopColor="#a855f7" />
+          </linearGradient>
+          <linearGradient id="ns-denim" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#4a5f9a" />
+            <stop offset="1" stopColor="#141d3c" />
           </linearGradient>
           <radialGradient id="ns-screenGlow" cx="0.5" cy="0.5" r="0.5">
             <stop offset="0" stopColor="#8f7bff" stopOpacity="0.85" />
@@ -345,26 +394,27 @@ export default function NightScene({ className = "", crop = false }: { className
           <path d="M552 500 L598 500 L592 524 L558 524 Z" fill="#1b1542" stroke="#4a3ab0" strokeOpacity="0.6" />
         </g>
 
-        {/* chai */}
-        <g transform="translate(650 466)">
-          <path d="M14 0 C 8 -16, 22 -24, 14 -40" stroke="#e4dcff" strokeOpacity="0.45" strokeWidth="3" fill="none" className="steam" />
-          <path d="M30 0 C 24 -18, 38 -26, 30 -46" stroke="#e4dcff" strokeOpacity="0.35" strokeWidth="3" fill="none" className="steam" style={{ animationDelay: "1.1s" }} />
-          <rect x="0" y="4" width="46" height="54" rx="7" fill="#17123c" stroke="#6b5ae0" strokeOpacity="0.8" strokeWidth="2" />
-          <path d="M46 16 C 62 16, 62 42, 46 42" stroke="#6b5ae0" strokeOpacity="0.8" strokeWidth="5" fill="none" />
-          <text x="23" y="30" textAnchor="middle" fontFamily="Caveat, cursive" fontSize="15" fill="#d6ccff">fueled</text>
-          <text x="23" y="46" textAnchor="middle" fontFamily="Caveat, cursive" fontSize="15" fill="#d6ccff">by chai</text>
-        </g>
-
         {/* ---------- main monitor ---------- */}
-        <rect x="690" y="236" width="380" height="270" rx="26" fill="#7c5cff" opacity="0.55" filter="url(#ns-blur40)" />
-        <rect x="868" y="488" width="26" height="36" fill="#120d30" />
-        <ellipse cx="881" cy="524" rx="70" ry="7" fill="#120d30" />
-        <rect x="700" y="250" width="362" height="242" rx="10" fill="#06051a" stroke="#4a3ab0" strokeWidth="2" />
-        <svg x="711" y="260" width="340" height="224" viewBox="0 0 300 198" preserveAspectRatio="none">
+        {/* ambient back-light on the wall */}
+        <rect x="680" y="226" width="400" height="290" rx="30" fill="#7c5cff" opacity="0.6" filter="url(#ns-blur40)" />
+        {/* stand: brushed-metal neck and a thin base, reflected on the desk */}
+        <path d="M866 470 L898 470 L902 520 L862 520 Z" fill="url(#ns-metal)" />
+        <path d="M866 470 L870 520" stroke="#8a84aa" strokeOpacity="0.5" strokeWidth="1" />
+        <path d="M806 520 Q881 512 956 520 L960 526 Q881 532 802 526 Z" fill="url(#ns-metal)" />
+        <path d="M808 521 Q881 514 954 521" stroke="#c9c3e6" strokeOpacity="0.5" strokeWidth="1" fill="none" />
+        <ellipse cx="881" cy="532" rx="90" ry="6" fill="#000" opacity="0.5" filter="url(#ns-blur5)" />
+        {/* body */}
+        <rect x="701" y="248" width="360" height="252" rx="9" fill="url(#ns-bezel)" />
+        <rect x="701.5" y="248.5" width="359" height="251" rx="8.5" fill="none" stroke="#8e88b0" strokeOpacity="0.45" />
+        {/* screen */}
+        <svg x="711" y="256" width="340" height="224" viewBox="0 0 300 198" preserveAspectRatio="none">
           <Editor {...typing} />
         </svg>
-        {/* glass reflection */}
-        <path d="M711 260 L820 260 L740 484 L711 484 Z" fill="#fff" opacity="0.035" />
+        <rect x="711" y="256" width="340" height="224" fill="url(#ns-glass)" />
+        <rect x="711" y="256" width="340" height="224" fill="none" stroke="#000" strokeOpacity="0.6" strokeWidth="2" />
+        {/* chin with power light */}
+        <circle cx="1046" cy="490" r="1.8" fill="#34d399" filter="url(#ns-glow)" />
+        <rect x="868" y="487" width="26" height="3" rx="1.5" fill="#3a3550" />
 
         {/* ---------- laptop with eval scores ---------- */}
         <g>
@@ -375,83 +425,133 @@ export default function NightScene({ className = "", crop = false }: { className
           <path d="M1320 524 L1550 520 L1560 532 L1312 536 Z" fill="#1b1542" />
         </g>
 
-        {/* ---------- Jagannath (old 640-space drawing scaled into the scene) ---------- */}
+        {/* ---------- Jagannath (drawn in a 640-wide space, scaled into the scene) ---------- */}
         <g transform="translate(534 -13) scale(1.35)">
-          {/* keyboard + mouse */}
-          <path d="M218 404 L404 404 L414 424 L208 424 Z" fill="#120d30" stroke="#4a3ab0" />
-          {Array.from({ length: 3 }, (_, r) =>
-            Array.from({ length: 14 }, (_, c) => (
-              <rect key={`${r}-${c}`} x={216 + c * 13 + r * 1.5} y={407 + r * 5.5} width="10" height="3.6" rx="0.8" fill="#221a52" className={(r * 14 + c) % 7 === 0 ? "keypress" : undefined} style={{ animationDelay: `${((r * 14 + c) * 0.23) % 2}s` }} />
-            )),
-          )}
-          <path d="M218 404 L404 404" stroke="#a996ff" strokeOpacity="0.6" />
-          <ellipse cx="604" cy="418" rx="11" ry="7" fill="#120d30" stroke="#4a3ab0" className="mouse-move" />
+          {/* mechanical keyboard with RGB under-glow */}
+          <path d="M196 434 L418 434" stroke="url(#ns-rgb)" strokeWidth="4" opacity="0.9" filter="url(#ns-blur2)" />
+          <path d="M204 400 L410 400 L422 428 L192 428 Z" fill="url(#ns-kbd)" stroke="#6b5ae0" strokeOpacity="0.45" strokeWidth="0.8" />
+          <path d="M192 428 L422 428 L421 433 L193 433 Z" fill="#07060f" />
+          {Array.from({ length: 4 }, (_, r) => {
+            const left = 207 - r * 2.4, right = 407 + r * 2.4, n = 15, gap = 1.1
+            const w = (right - left - gap * (n - 1)) / n
+            return Array.from({ length: n }, (_, c) => (
+              <rect key={`${r}-${c}`} x={left + c * (w + gap)} y={402.4 + r * 5} width={w} height={3.9} rx="0.7" fill="url(#ns-key)" className={(r * 15 + c) % 6 === 0 ? "keypress" : undefined} style={{ animationDelay: `${((r * 15 + c) * 0.19) % 2}s` }} />
+            ))
+          })}
+          {[[197, 20], [219, 14], [235, 112], [349, 14], [365, 14], [381, 14], [397, 16]].map(([x, w], i) => (
+            <rect key={i} x={x} y={422.4} width={w} height={4} rx="0.7" fill="url(#ns-key)" />
+          ))}
+          <path d="M204 400 L410 400" stroke="#b7a8ff" strokeOpacity="0.55" strokeWidth="0.8" />
 
-          {/* left arm (monitor side, catches the light) */}
-          <path d="M404 360 L 376 432 L 340 410" stroke="url(#ns-sleeveL)" strokeWidth="30" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          <path d="M392 368 L 368 428" stroke="#e0d8ff" strokeOpacity="0.55" strokeWidth="3" strokeLinecap="round" filter="url(#ns-blur2)" />
-          <path d="M350 414 L 336 406" stroke="#141a3c" strokeWidth="28" />
-          <path d="M352 418 L 338 410" stroke="#d8d0f0" strokeWidth="2" />
-          <path d="M347 410 L 333 402" stroke="#d8d0f0" strokeWidth="2" />
-          <g className="typing-hand">
-            <ellipse cx="326" cy="404" rx="16" ry="9" fill="#7a4e38" />
-            {[0, 1, 2, 3].map((f) => <rect key={f} x={311 + f * 6.5} y={405} width="5" height="9" rx="2.5" fill="#6a4230" className="finger" style={{ animationDelay: `${f * 0.11}s` }} />)}
-          </g>
-
-          {/* right arm (in shadow, hand on the mouse) */}
+          {/* mouse on a mouse-pad */}
+          <path d="M566 404 L640 404 L650 432 L558 432 Z" fill="#0b0920" stroke="#7c5cff" strokeOpacity="0.35" strokeWidth="0.8" />
           <g className="mouse-move">
-            <path d="M548 362 L 580 446 L 600 414" stroke="url(#ns-sleeveR)" strokeWidth="30" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            <path d="M566 380 L 590 440" stroke="#7dd3fc" strokeOpacity="0.25" strokeWidth="2.5" strokeLinecap="round" filter="url(#ns-blur2)" />
-            <path d="M596 420 L 602 408" stroke="#0c1024" strokeWidth="28" />
-            <path d="M592 418 L 598 406" stroke="#8e86ad" strokeWidth="2" />
-            <path d="M600 422 L 606 410" stroke="#8e86ad" strokeWidth="2" />
-            <ellipse cx="606" cy="402" rx="12" ry="8" fill="#4a2f22" />
+            <ellipse cx="606" cy="417" rx="8.5" ry="11.5" fill="url(#ns-kbd)" stroke="#8f7bff" strokeOpacity="0.5" strokeWidth="0.8" />
+            <path d="M606 406 L606 413" stroke="#000" strokeOpacity="0.6" strokeWidth="0.8" />
+            <rect x="605" y="408" width="2" height="3.5" rx="1" fill="#22d3ee" filter="url(#ns-glow)" />
           </g>
 
-          {/* torso */}
-          <path d="M398 352 C 412 334, 432 322, 452 318 L 486 318 C 510 322, 534 336, 548 356 C 560 400, 566 470, 566 600 L 386 600 C 384 480, 386 400, 398 352 Z" fill="url(#ns-jacket)" />
-          <path d="M452 318 C 428 322, 408 334, 396 354 C 392 366, 392 378, 394 388 C 404 366, 420 346, 442 332 Z" fill="#b2a8e0" />
-          <path d="M486 318 C 512 322, 536 338, 550 360 C 554 372, 556 382, 556 392 C 546 370, 528 348, 498 332 Z" fill="#3e3858" />
-          <text x="478" y="428" textAnchor="middle" fontFamily="Sora Variable, sans-serif" fontWeight="800" fontSize="26" fill="#a59cc8" opacity="0.45" transform="rotate(-4 478 428)">JP</text>
-          {/* rim light from the monitor along the left edge of the shoulders */}
-          <path d="M398 352 C 412 334, 432 322, 452 318" stroke="#c9bcff" strokeWidth="3" fill="none" filter="url(#ns-blur2)" />
-          <path d="M398 352 C 412 334, 432 322, 452 318" stroke="#efeaff" strokeWidth="1" fill="none" />
-          <path d="M398 352 C 390 400, 388 460, 388 600" stroke="#8f7bff" strokeOpacity="0.5" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
-          {/* cool window light on the right edge */}
-          <path d="M548 356 C 560 400, 566 470, 566 600" stroke="#7dd3fc" strokeOpacity="0.3" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
+          {/* cross-legged on the chair: knees stick out on both sides */}
+          <path d="M424 548 C 402 538, 360 542, 346 562 C 338 578, 350 594, 372 596 C 394 598, 416 590, 428 582 Z" fill="url(#ns-denim)" />
+          <path d="M424 548 C 402 538, 360 542, 346 562" stroke="#b7a8ff" strokeOpacity="0.6" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
+          <path d="M546 548 C 568 538, 610 542, 622 562 C 630 578, 618 594, 596 596 C 574 598, 554 590, 542 582 Z" fill="#141c3a" />
+          <path d="M600 548 C 612 552, 620 558, 622 564" stroke="#7dd3fc" strokeOpacity="0.3" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
 
-          {/* head */}
-          <g className="head-bob">
-            <path d="M440 290 L 484 290 L 488 322 L 440 322 Z" fill="#3e271b" />
-            <ellipse cx="456" cy="254" rx="50" ry="56" fill="url(#ns-skin)" />
-            <path d="M408 280 C 412 296, 424 306, 440 308 L 446 300 C 432 298, 420 290, 414 276 Z" fill="#1a100b" opacity="0.5" />
-            <path d="M404 268 C 407 270, 410 270, 412 268" stroke="#140c08" strokeWidth="2.2" strokeLinecap="round" opacity="0.8" />
-            {/* rim light on the cheek, the brightest edge in the scene */}
-            <path d="M413 240 C 405 254, 403 270, 408 286 C 412 296, 420 304, 430 306" stroke="#d8ccff" strokeWidth="3" fill="none" filter="url(#ns-blur2)" />
-            <path d="M413 240 C 405 254, 403 270, 408 286 C 412 296, 420 304, 430 306" stroke="#fbf9ff" strokeWidth="1" fill="none" />
-            {/* hair */}
-            <path d="M420 244 C 410 214, 424 186, 452 176 C 472 166, 502 170, 514 192 C 524 212, 522 242, 514 264 C 508 282, 498 296, 484 304 L 454 306 C 444 292, 436 274, 432 256 C 430 250, 426 246, 420 244 Z" fill="#07050b" />
-            <path d="M418 228 C 408 204, 418 180, 444 170 C 460 164, 478 164, 490 170 C 470 170, 452 176, 440 190 C 452 182, 468 180, 480 184 C 460 188, 442 200, 432 220 Z" fill="#0d0a14" />
-            <path d="M418 230 C 410 206, 420 182, 446 170" stroke="#b9a9ff" strokeWidth="2.5" fill="none" filter="url(#ns-blur2)" />
-            <path d="M432 196 C 446 186, 462 182, 478 184" stroke="#2a2340" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d="M440 206 C 456 196, 474 194, 490 198" stroke="#221c34" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-            <path d="M484 240 C 494 238, 506 246, 510 258 C 506 272, 498 284, 488 292 C 484 276, 482 256, 484 240 Z" fill="#241b24" opacity="0.6" />
-            <ellipse cx="496" cy="262" rx="8" ry="14" fill="#4a2e20" />
-            <path d="M496 252 C 501 256, 501 268, 496 272" stroke="#2e1c13" strokeWidth="2" fill="none" />
-            <path d="M486 240 L 490 262" stroke="#07050b" strokeWidth="3" />
-            {/* cool rim on the back of the head from the window */}
-            <path d="M512 196 C 522 214, 520 240, 512 262" stroke="#7dd3fc" strokeOpacity="0.35" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
+          {/* everything above the hips leans a little to the left, toward the screen */}
+          <g transform="rotate(-6 476 620)">
+            {/* right arm: hand on the mouse (in shadow) */}
+            <g className="mouse-move">
+              <path d="M560 372 L 598 468 L 626 430" stroke="url(#ns-sleeveR)" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <path d="M578 392 L 604 456" stroke="#7dd3fc" strokeOpacity="0.25" strokeWidth="2.5" strokeLinecap="round" filter="url(#ns-blur2)" />
+              <path d="M620 438 L 628 425" stroke="#0c1024" strokeWidth="29" />
+              <path d="M615 435 L 623 422" stroke="#8e86ad" strokeWidth="2" />
+              <path d="M625 441 L 633 428" stroke="#8e86ad" strokeWidth="2" />
+              <ellipse cx="631" cy="418" rx="12" ry="9" fill="#4a2f22" />
+            </g>
+
+            {/* left arm: types, then comes up to the chin to think */}
+            <g className={`think-arm ${typing.thinking ? "is-thinking" : ""}`}>
+              <path className="arm-sleeve" d={armD} style={{ d: `path("${armD}")` } as React.CSSProperties} stroke="url(#ns-sleeveL)" strokeWidth="32" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <path className="arm-rim" d={rimD} style={{ d: `path("${rimD}")` } as React.CSSProperties} stroke="#e0d8ff" strokeOpacity="0.55" strokeWidth="3" strokeLinecap="round" filter="url(#ns-blur2)" fill="none" />
+              <g className="arm-hand-type" opacity={typing.thinking ? 0 : 1}>
+                <path d="M330 412 L 316 401" stroke="#141a3c" strokeWidth="29" />
+                <path d="M333 417 L 319 406" stroke="#d8d0f0" strokeWidth="2" />
+                <path d="M327 407 L 313 396" stroke="#d8d0f0" strokeWidth="2" />
+                <g className="typing-hand">
+                  <ellipse cx="304" cy="398" rx="16" ry="9" fill="#7a4e38" />
+                  {[0, 1, 2, 3].map((f) => <rect key={f} x={289 + f * 6.5} y={399} width="5" height="9" rx="2.5" fill="#6a4230" className="finger" style={{ animationDelay: `${f * 0.11}s` }} />)}
+                </g>
+              </g>
+              <g className="arm-hand-think" opacity={typing.thinking ? 1 : 0}>
+                <path d="M396 334 L 392 320" stroke="#141a3c" strokeWidth="29" />
+                <path d="M383 333 L 381 319" stroke="#d8d0f0" strokeWidth="2" />
+                <path d="M409 333 L 405 319" stroke="#d8d0f0" strokeWidth="2" />
+                {/* loose fist resting under the jaw */}
+                <ellipse cx="398" cy="304" rx="13" ry="15" fill="#8a5a40" />
+                <path d="M388 296 C 392 290, 404 290, 408 296" stroke="#5e3a28" strokeWidth="1.6" fill="none" />
+                <path d="M386 302 L 409 302" stroke="#5e3a28" strokeWidth="1.2" strokeOpacity="0.6" />
+                <path d="M386 296 C 384 304, 386 312, 392 318" stroke="#e8dcff" strokeOpacity="0.7" strokeWidth="1.6" fill="none" />
+              </g>
+            </g>
+
+            {/* torso: varsity jacket */}
+            <path d="M386 362 C 400 342, 424 326, 446 320 L 482 320 C 508 326, 540 342, 562 362 C 576 410, 580 480, 578 640 L 374 640 C 370 480, 374 410, 386 362 Z" fill="url(#ns-jacket)" />
+            <path d="M446 320 C 422 326, 400 342, 386 362 C 380 376, 380 392, 382 404 C 392 380, 410 356, 436 336 Z" fill="#b2a8e0" />
+            <path d="M482 320 C 508 326, 540 342, 562 362 C 568 378, 570 392, 568 404 C 556 380, 530 354, 494 334 Z" fill="#3e3858" />
+            <path d="M382 404 C 376 460, 374 540, 374 640" stroke="#05070f" strokeWidth="2" opacity="0.6" fill="none" />
+            <path d="M568 404 C 574 460, 578 540, 578 640" stroke="#05070f" strokeWidth="2" opacity="0.6" fill="none" />
+            {/* back pleat / shoulder-blade shading */}
+            <path d="M430 400 C 450 430, 500 430, 524 400" stroke="#05070f" strokeOpacity="0.35" strokeWidth="6" fill="none" filter="url(#ns-blur5)" />
+            <text x="480" y="452" textAnchor="middle" fontFamily="Sora Variable, sans-serif" fontWeight="800" fontSize="24" fill="#a59cc8" opacity="0.4" transform="rotate(-3 480 452)">JP</text>
+            {/* rim light */}
+            <path d="M386 362 C 400 342, 424 326, 446 320" stroke="#c9bcff" strokeWidth="3" fill="none" filter="url(#ns-blur2)" />
+            <path d="M386 362 C 400 342, 424 326, 446 320" stroke="#efeaff" strokeWidth="1" fill="none" />
+            <path d="M386 362 C 376 410, 372 480, 374 640" stroke="#8f7bff" strokeOpacity="0.5" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
+            <path d="M562 362 C 576 410, 580 480, 578 640" stroke="#7dd3fc" strokeOpacity="0.3" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
+
+            {/* head: a little smaller for natural proportions; tilts further when thinking */}
+            <g className={`think-tilt ${typing.thinking ? "is-thinking" : ""}`}>
+              <g className={typing.thinking ? undefined : "head-bob"}>
+                <g transform="translate(462 312) scale(0.84) translate(-462 -312)">
+                  <path d="M440 290 L 484 290 L 488 326 L 440 326 Z" fill="#3e271b" />
+                  <ellipse cx="456" cy="254" rx="50" ry="56" fill="url(#ns-skin)" />
+                  <path d="M408 280 C 412 296, 424 306, 440 308 L 446 300 C 432 298, 420 290, 414 276 Z" fill="#1a100b" opacity="0.5" />
+                  <path d="M404 268 C 407 270, 410 270, 412 268" stroke="#140c08" strokeWidth="2.2" strokeLinecap="round" opacity="0.8" />
+                  <path d="M413 240 C 405 254, 403 270, 408 286 C 412 296, 420 304, 430 306" stroke="#d8ccff" strokeWidth="3" fill="none" filter="url(#ns-blur2)" />
+                  <path d="M413 240 C 405 254, 403 270, 408 286 C 412 296, 420 304, 430 306" stroke="#fbf9ff" strokeWidth="1" fill="none" />
+                  <path d="M420 244 C 410 214, 424 186, 452 176 C 472 166, 502 170, 514 192 C 524 212, 522 242, 514 264 C 508 282, 498 296, 484 304 L 454 306 C 444 292, 436 274, 432 256 C 430 250, 426 246, 420 244 Z" fill="#07050b" />
+                  <path d="M418 228 C 408 204, 418 180, 444 170 C 460 164, 478 164, 490 170 C 470 170, 452 176, 440 190 C 452 182, 468 180, 480 184 C 460 188, 442 200, 432 220 Z" fill="#0d0a14" />
+                  <path d="M418 230 C 410 206, 420 182, 446 170" stroke="#b9a9ff" strokeWidth="2.5" fill="none" filter="url(#ns-blur2)" />
+                  <path d="M432 196 C 446 186, 462 182, 478 184" stroke="#2a2340" strokeWidth="2" fill="none" strokeLinecap="round" />
+                  <path d="M440 206 C 456 196, 474 194, 490 198" stroke="#221c34" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+                  <path d="M484 240 C 494 238, 506 246, 510 258 C 506 272, 498 284, 488 292 C 484 276, 482 256, 484 240 Z" fill="#241b24" opacity="0.6" />
+                  <ellipse cx="496" cy="262" rx="8" ry="14" fill="#4a2e20" />
+                  <path d="M496 252 C 501 256, 501 268, 496 272" stroke="#2e1c13" strokeWidth="2" fill="none" />
+                  <path d="M486 240 L 490 262" stroke="#07050b" strokeWidth="3" />
+                  <path d="M512 196 C 522 214, 520 240, 512 262" stroke="#7dd3fc" strokeOpacity="0.35" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
+                </g>
+              </g>
+            </g>
+
+            {/* varsity collar */}
+            <path d="M438 324 C 452 314, 476 314, 490 324" stroke="#0e1430" strokeWidth="13" fill="none" strokeLinecap="round" />
+            <path d="M436 321 C 452 311, 476 311, 492 321" stroke="#cfc6ec" strokeWidth="1.6" fill="none" />
+            <path d="M439 327 C 454 318, 474 318, 489 327" stroke="#cfc6ec" strokeWidth="1.6" fill="none" />
+
+            {/* thinking: a small glass bubble with dots */}
+            <g className="thought" opacity={typing.thinking ? 1 : 0}>
+              <circle cx="392" cy="232" r="3" fill="#cfc6ff" opacity="0.6" />
+              <circle cx="380" cy="216" r="5" fill="#cfc6ff" opacity="0.7" />
+              <rect x="318" y="168" width="64" height="34" rx="17" fill="#120d30" fillOpacity="0.85" stroke="#b7a8ff" strokeOpacity="0.7" />
+              {[0, 1, 2].map((d) => <circle key={d} cx={337 + d * 13} cy="185" r="3.4" fill="#e6e0ff" className="think-dot" style={{ animationDelay: `${d * 0.18}s` }} />)}
+            </g>
           </g>
 
-          {/* varsity collar */}
-          <path d="M436 322 C 450 312, 476 312, 492 322" stroke="#0e1430" strokeWidth="13" fill="none" strokeLinecap="round" />
-          <path d="M434 319 C 450 309, 476 309, 494 319" stroke="#cfc6ec" strokeWidth="1.6" fill="none" />
-          <path d="M437 325 C 452 316, 474 316, 491 325" stroke="#cfc6ec" strokeWidth="1.6" fill="none" />
-
-          {/* chair */}
-          <path d="M412 486 C 412 470, 422 462, 438 462 L 532 462 C 548 462, 556 470, 556 486 L 560 640 L 408 640 Z" fill="#0b0920" />
+          {/* chair back (does not lean) */}
+          <path d="M412 486 C 412 470, 422 462, 438 462 L 532 462 C 548 462, 556 470, 556 486 L 560 660 L 408 660 Z" fill="#0b0920" />
           <path d="M412 486 C 412 470, 422 462, 438 462 L 532 462" stroke="#8f7bff" strokeOpacity="0.55" strokeWidth="2" fill="none" />
-          <path d="M412 486 L 408 640" stroke="#8f7bff" strokeOpacity="0.35" strokeWidth="2" />
+          <path d="M412 486 L 408 660" stroke="#8f7bff" strokeOpacity="0.35" strokeWidth="2" />
+          <rect x="470" y="500" width="28" height="4" rx="2" fill="#7c5cff" opacity="0.6" />
         </g>
 
         {/* ---------- glowing Earth in the foreground ---------- */}
