@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
 import { ArrowRight, ArrowUpRight, Briefcase, Download, Github, GraduationCap, Heart, Linkedin, Mail, MapPin, Quote, Sparkles, Zap, Code2, BarChart3, Award, Send } from "lucide-react"
 import Nav from "@/components/nav"
-import HeroCanvas from "@/components/hero-canvas"
 import Clock from "@/components/clock"
 import Typed from "@/components/typed"
 import Reveal from "@/components/reveal"
@@ -9,7 +8,7 @@ import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
 import SkillOrbit from "@/components/skill-orbit"
 import ContactForm from "@/components/contact-form"
-import CoderScene from "@/components/coder-scene"
+import NightScene from "@/components/night-scene"
 import StatusTicker from "@/components/status-ticker"
 import Assistant, { type QA } from "@/components/assistant"
 import { site, hero, statusLines, about, projects, experience, skills, orbitIcons, stats, education, certifications } from "@/lib/data"
@@ -60,31 +59,28 @@ export default function Home() {
       <main>
         {/* ------------------------------------------------------------ Hero */}
         <section id="home" className="relative flex min-h-[100svh] items-center overflow-hidden pt-16">
-          <HeroCanvas />
-          <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 30%, rgba(5,3,13,0.6) 44%, rgba(5,3,13,0) 60%)" }} />
+          <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 28%, rgba(5,3,13,0.75) 40%, rgba(5,3,13,0) 56%)" }} />
 
           {hero.image ? (
-            <>
-              {/* Full-bleed hero photo/illustration, faded into the dark on the left */}
-              <img
-                src={hero.image}
-                alt={`${site.name} coding at his desk at night`}
-                fetchPriority="high"
-                className="hero-photo pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[72%] object-cover object-center lg:block"
-              />
-              <div className="pointer-events-none absolute right-[30%] top-[9%] z-10 hidden w-64 rotate-[-6deg] lg:block">
-                <div className="floaty rounded-2xl border border-violet/40 bg-night/40 p-5 shadow-glow backdrop-blur-sm">
-                  <p className="font-hand text-[28px] leading-tight text-ink/90">&ldquo;{hero.quote}&rdquo;</p>
-                  <p className="mt-2 text-right font-mono text-[11px] tracking-[0.3em] text-ink/70">— {site.short.toUpperCase()}</p>
-                </div>
-              </div>
-            </>
+            /* Full-bleed hero picture, faded into the dark on the left */
+            <img
+              src={hero.image}
+              alt={`${site.name} coding at his desk at night`}
+              fetchPriority="high"
+              className="hero-photo pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[72%] object-cover object-center lg:block"
+            />
           ) : (
-            <div className="hero-art pointer-events-none absolute inset-y-0 right-0 hidden w-[56%] items-center justify-center pt-16 lg:flex">
-              <CoderScene className="w-full max-w-[780px]" />
-            </div>
+            /* Full-bleed illustrated night scene */
+            <NightScene className="pointer-events-none absolute inset-0 hidden lg:block" />
           )}
-          <div className={`absolute z-10 hidden w-64 ${hero.image ? "right-[8%] top-[44%]" : "right-[34%] top-[13%]"} rounded-xl border border-line bg-night/75 p-4 backdrop-blur-md lg:block`}>
+          {/* glass quote board */}
+          <div className="pointer-events-none absolute left-[52%] top-[13%] z-10 hidden w-72 rotate-[-5deg] lg:block">
+            <div className="floaty rounded-2xl border border-violet-soft/50 bg-[#0c0826]/45 px-6 py-5 shadow-[0_0_40px_-6px_rgba(124,92,255,0.75),inset_0_0_24px_rgba(124,92,255,0.18)] backdrop-blur-[2px]">
+              <p className="font-hand text-[32px] leading-[1.1] text-[#e6e0ff]">&ldquo;{hero.quote}&rdquo;</p>
+              <p className="mt-2 text-right font-hand text-xl tracking-[0.2em] text-[#e6e0ff]/85">— {site.short.toUpperCase()}</p>
+            </div>
+          </div>
+          <div className={`absolute bottom-[12%] left-[50%] z-10 hidden w-64 rounded-xl border border-white/10 bg-[#0a0720]/80 p-4 backdrop-blur-md lg:block`}>
             <p className="eyebrow !text-[10px]">// right now</p>
             <p className="mt-2 min-h-[2.5rem] leading-snug"><StatusTicker lines={statusLines} /></p>
           </div>
@@ -92,7 +88,7 @@ export default function Home() {
           <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-20">
             <div className="max-w-2xl">
               <p className="eyebrow"><Typed text="// Hello, I'm" /></p>
-              <h1 className="mt-4 font-display text-6xl font-extrabold leading-none tracking-[-0.04em] sm:text-8xl lg:text-[6.75rem] xl:text-[7.5rem]">
+              <h1 className="mt-4 font-display text-6xl font-extrabold leading-none tracking-[-0.04em] sm:text-8xl lg:text-[6.25rem] xl:text-[6.75rem]">
                 <span className="bg-gradient-to-r from-white via-[#d9d2ff] to-violet bg-clip-text text-transparent">{site.short}</span>
                 <span className="sr-only"> Patro, {site.role}</span>
               </h1>
@@ -127,9 +123,11 @@ export default function Home() {
                 <Clock timezone={site.timezone} />
               </div>
 
-              <div className="hero-art-mobile mt-12 lg:hidden">
-                <CoderScene className="mx-auto w-full max-w-[520px]" />
-                <div className="mx-auto -mt-6 w-fit max-w-full rounded-xl border border-line bg-night/80 px-4 py-3 backdrop-blur-md">
+              <div className="mt-12 lg:hidden">
+                <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_0_60px_-20px_rgba(124,92,255,0.8)]">
+                  <NightScene crop className="aspect-[4/3] w-full" />
+                </div>
+                <div className="mx-auto -mt-8 w-fit max-w-[90%] rounded-xl border border-white/10 bg-[#0a0720]/85 px-4 py-3 backdrop-blur-md">
                   <p className="eyebrow !text-[10px]">// right now</p>
                   <p className="mt-1.5"><StatusTicker lines={statusLines} /></p>
                 </div>

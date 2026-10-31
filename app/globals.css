@@ -130,3 +130,9 @@ body {
   mask-composite: intersect;
   filter: saturate(1.05) brightness(0.92);
 }
+.shimmer { animation: shimmer 2.6s ease-in-out infinite; }
+@keyframes shimmer { 50% { opacity: 0.15; transform: translateX(1.5px); } }
+.draw-line { stroke-dasharray: 220; animation: draw-line 6s ease-in-out infinite; }
+@keyframes draw-line { 0% { stroke-dashoffset: 220; } 45%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -220; } }
+.arc-flow { stroke-dasharray: 6 10; animation: arc-flow 2.4s linear infinite; }
+@keyframes arc-flow { to { stroke-dashoffset: -32; } }
