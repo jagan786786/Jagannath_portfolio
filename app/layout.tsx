@@ -1,14 +1,14 @@
 import type { Metadata, Viewport } from "next"
 import type { ReactNode } from "react"
-import "@fontsource-variable/bricolage-grotesque/index.css"
-import "@fontsource/ibm-plex-sans/400.css"
-import "@fontsource/ibm-plex-sans/500.css"
-import "@fontsource/ibm-plex-mono/400.css"
+import "@fontsource-variable/sora/index.css"
+import "@fontsource-variable/inter/index.css"
+import "@fontsource-variable/jetbrains-mono/index.css"
+import "@fontsource/caveat/500.css"
 import "./globals.css"
 import { site, hero } from "@/lib/data"
 
 const title = `${site.name} — ${site.role}`
-const description = hero.answer.split(":")[0] + "."
+const description = hero.bio
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -31,8 +31,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f5f7" },
-    { media: "(prefers-color-scheme: dark)", color: "#12151c" },
+    { color: "#05030d" },
   ],
 }
 

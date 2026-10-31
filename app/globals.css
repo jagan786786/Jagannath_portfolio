@@ -2,57 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg: 244 245 247;
-  --ink: 22 26 35;
-  --muted: 88 96 110;
-  --rule: 216 220 227;
-  --accent: 52 68 232;
-  --heat: 240 168 30;
-  --on-accent: 255 255 255;
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: 18 21 28;
-    --ink: 232 234 238;
-    --muted: 156 163 175;
-    --rule: 44 49 60;
-    --accent: 140 152 255;
-    --heat: 224 150 20;
-    --on-accent: 18 21 28;
-    color-scheme: dark;
-  }
-}
-
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
+  color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
 body {
-  @apply bg-bg font-sans text-ink antialiased;
+  @apply bg-night font-sans text-ink antialiased;
 }
+
+::selection { background: rgb(124 92 255 / 0.4); }
 
 :focus-visible {
-  outline: 2px solid rgb(var(--accent));
+  outline: 2px solid #a996ff;
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
-/* Hero token stream */
-.token { transition: background-color 400ms ease; }
-.caret {
-  display: inline-block;
-  width: 0.55em;
-  height: 1em;
-  margin-left: 2px;
-  vertical-align: -0.12em;
-  background: rgb(var(--accent));
-  animation: blink 1s steps(1) infinite;
+@layer components {
+  /* "// 01. ABOUT ME" style section labels */
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.35em] text-violet-soft/80;
+  }
+  .grad {
+    background: linear-gradient(92deg, #7c5cff 0%, #a996ff 45%, #6d4cff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .card {
+    @apply rounded-2xl border border-line bg-panel/80;
+  }
+  .chip {
+    @apply rounded-full border border-violet/20 bg-violet/10 px-3 py-1 text-xs text-violet-soft;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl border border-violet/40 bg-[#120b2e] px-5 py-3 text-sm font-semibold text-white shadow-glow transition hover:bg-[#1a1040];
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-xl border border-line bg-white/[0.03] px-5 py-3 text-sm font-medium text-ink transition hover:border-violet/40 hover:bg-white/[0.06];
+  }
 }
+
+/* Faint grid behind sections */
+.grid-bg {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.reveal { opacity: 1; transform: none; transition: opacity 700ms ease, transform 700ms ease; }
+.js .reveal:not(.in) { opacity: 0; transform: translateY(24px); }
+
 @keyframes blink { 50% { opacity: 0; } }
+.caret { animation: blink 1s steps(1) infinite; }
+
+@keyframes floaty { 50% { transform: translateY(-8px); } }
+.floaty { animation: floaty 6s ease-in-out infinite; }
+
+@keyframes pulse-dot { 0%,100% { box-shadow: 0 0 0 0 rgb(52 211 153 / 0.6); } 50% { box-shadow: 0 0 0 6px rgb(52 211 153 / 0); } }
+.pulse-dot { animation: pulse-dot 2s ease-out infinite; }
+
+@keyframes scroll-cue { 0% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
+.scroll-cue { animation: scroll-cue 1.8s ease-in-out infinite; }
