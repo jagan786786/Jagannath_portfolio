@@ -77,7 +77,7 @@ function rng(seed: number) {
   }
 }
 
-function useTyping(visible: React.MutableRefObject<boolean>) {
+export function useTyping(visible: React.MutableRefObject<boolean>) {
   const [si, setSi] = useState(0)
   const [typed, setTyped] = useState(0)
   const [phase, setPhase] = useState<"typing" | "running" | "done">("typing")
@@ -120,7 +120,7 @@ function useTyping(visible: React.MutableRefObject<boolean>) {
 }
 
 /* Editor drawn in its own 300 x 198 space, placed on the monitor with a nested <svg>. */
-function Editor({ snip, typed, phase, si, thinking }: ReturnType<typeof useTyping>) {
+export function Editor({ snip, typed, phase, si, thinking }: ReturnType<typeof useTyping>) {
   const FS = 7.4, CW = FS * 0.6, LH = 11.6, X = 68, Y = 32
   const lines = useMemo(() => snip.code.split("\n"), [snip])
   let start = 0

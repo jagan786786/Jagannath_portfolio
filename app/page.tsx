@@ -9,6 +9,7 @@ import SkillsGrid from "@/components/skills-grid"
 import SkillOrbit from "@/components/skill-orbit"
 import ContactForm from "@/components/contact-form"
 import NightScene from "@/components/night-scene"
+import HeroPhoto from "@/components/hero-photo"
 import StatusTicker from "@/components/status-ticker"
 import Assistant, { type QA } from "@/components/assistant"
 import { site, hero, statusLines, about, projects, experience, skills, orbitIcons, stats, education, certifications } from "@/lib/data"
@@ -63,15 +64,16 @@ export default function Home() {
 
           {hero.image ? (
             <>
-              {/* Full-bleed hero picture: him large on the right, dark wall under the text */}
-              <img
+              {/* Full-bleed hero picture, brought to life: live code, thinking, glows */}
+              <HeroPhoto
                 src={hero.image}
                 srcSet={`/hero-sm.webp 1024w, ${hero.image} 2048w`}
-                sizes="70vw"
+                sizes="72vw"
                 alt={`${site.name} coding at his desk at night`}
-                fetchPriority="high"
-                className="hero-photo pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[72%] object-cover lg:block"
-                style={{ objectPosition: "90% 40%" }}
+                priority
+                posX={0.9}
+                posY={0.4}
+                className="hero-photo absolute inset-y-0 right-0 hidden h-full w-[72%] lg:block"
               />
               {/* drifting stars over the dark wall */}
               <div className="hero-stars pointer-events-none absolute inset-0 hidden lg:block" />
@@ -134,7 +136,7 @@ export default function Home() {
               <div className="mt-12 lg:hidden">
                 <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_0_60px_-20px_rgba(124,92,255,0.8)]">
                   {hero.image ? (
-                    <img src="/hero-sm.webp" alt={`${site.name} coding at his desk at night`} className="aspect-[4/3] w-full object-cover" style={{ objectPosition: "62% 50%" }} />
+                    <HeroPhoto src="/hero-sm.webp" alt={`${site.name} coding at his desk at night`} posX={0.62} posY={0.5} className="relative aspect-[4/3] w-full" />
                   ) : (
                     <NightScene crop className="aspect-[4/3] w-full" status={statusLines} />
                   )}
