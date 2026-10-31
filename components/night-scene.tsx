@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import StatusTicker from "@/components/status-ticker"
 
 /*
   Cinematic hero scene: Jagannath at his desk at night, seen from behind his
@@ -164,7 +165,7 @@ function Editor({ snip, typed, phase, si, thinking }: ReturnType<typeof useTypin
   )
 }
 
-export default function NightScene({ className = "", crop = false, showPerson = false }: { className?: string; crop?: boolean; showPerson?: boolean }) {
+export default function NightScene({ className = "", crop = false, showPerson = false, quote, author, status = [] }: { className?: string; crop?: boolean; showPerson?: boolean; quote?: string; author?: string; status?: string[] }) {
   const wrap = useRef<HTMLDivElement>(null)
   const visible = useRef(true)
   const typing = useTyping(visible)
@@ -284,6 +285,15 @@ export default function NightScene({ className = "", crop = false, showPerson = 
             <stop offset="0" stopColor="#4a5f9a" />
             <stop offset="1" stopColor="#141d3c" />
           </linearGradient>
+          <linearGradient id="ns-pot" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#c9c0f0" />
+            <stop offset="1" stopColor="#3b3466" />
+          </linearGradient>
+          <radialGradient id="ns-mouse" cx="0.35" cy="0.25" r="0.9">
+            <stop offset="0" stopColor="#4a4470" />
+            <stop offset="0.6" stopColor="#1c1830" />
+            <stop offset="1" stopColor="#0a0812" />
+          </radialGradient>
           <radialGradient id="ns-screenGlow" cx="0.5" cy="0.5" r="0.5">
             <stop offset="0" stopColor="#8f7bff" stopOpacity="0.85" />
             <stop offset="0.5" stopColor="#5b3df5" stopOpacity="0.35" />
@@ -320,14 +330,6 @@ export default function NightScene({ className = "", crop = false, showPerson = 
         <g transform={crop ? undefined : "translate(330 190) scale(0.8)"}>
         {/* soft violet bloom on the wall from the monitor */}
         <ellipse cx="880" cy="380" rx="420" ry="260" fill="#5b3df5" opacity="0.28" filter="url(#ns-blur40)" />
-
-        {/* framed print on the wall: a tiny transformer diagram */}
-        <g opacity="0.55">
-          <rect x="770" y="96" width="120" height="150" rx="4" fill="#0b0824" stroke="#3a2f7a" strokeWidth="3" />
-          {[0, 1, 2].map((i) => <rect key={i} x="800" y={118 + i * 34} width="60" height="20" rx="3" fill="none" stroke="#8f7bff" strokeOpacity="0.6" />)}
-          <path d="M830 138 L830 152 M830 172 L830 186" stroke="#8f7bff" strokeOpacity="0.6" />
-          <text x="830" y="234" textAnchor="middle" fontFamily="JetBrains Mono, monospace" fontSize="8" fill="#8f7bff" opacity="0.7">attention</text>
-        </g>
 
         {/* ---------- window + city ---------- */}
         <g clipPath="url(#ns-window)">
@@ -379,20 +381,50 @@ export default function NightScene({ className = "", crop = false, showPerson = 
         <rect x="1470" y="-260" width="2" height="785" fill="#6b5ae0" opacity="0.4" />
 
         {/* ---------- desk ---------- */}
-        <ellipse cx="870" cy="530" rx="360" ry="40" fill="#7c5cff" opacity="0.45" filter="url(#ns-blur18)" />
-        <path d="M520 524 L1700 524 L1700 600 L520 600 Z" fill="url(#ns-desk)" />
-        <path d="M520 524 L1700 524" stroke="#9d8cff" strokeOpacity="0.45" strokeWidth="2" />
-        <rect x="520" y="600" width="1180" height="18" fill="#05040f" />
+        <ellipse cx="900" cy="540" rx="420" ry="46" fill="#7c5cff" opacity="0.4" filter="url(#ns-blur18)" />
+        {/* top surface: back edge 524, front edge 604 */}
+        <path d="M520 524 L1700 524 L1700 604 L520 604 Z" fill="url(#ns-desk)" />
+        {/* soft monitor reflection in the glossy top */}
+        <rect x="730" y="528" width="300" height="34" rx="10" fill="#8f7bff" opacity="0.28" filter="url(#ns-blur5)" />
+        <path d="M520 524 L1700 524" stroke="#b7a8ff" strokeOpacity="0.35" strokeWidth="1.5" />
+        {/* front edge with a lit bevel */}
+        <path d="M520 604 L1700 604" stroke="#a996ff" strokeOpacity="0.55" strokeWidth="2" />
+        <rect x="520" y="605" width="1180" height="16" fill="#0a0820" />
+        <rect x="520" y="621" width="1180" height="6" fill="#000" opacity="0.6" />
 
-        {/* plant */}
-        <g opacity="0.85">
+        {/* plant in a ceramic pot, back-left of the desk */}
+        <ellipse cx="575" cy="546" rx="34" ry="5" fill="#000" opacity="0.55" filter="url(#ns-blur5)" />
+        <g>
           {[[-40, -110], [-14, -140], [14, -128], [38, -96], [-30, -70], [26, -60], [0, -90]].map(([dx, dy], i) => (
-            <g key={i} transform={`rotate(${dx * 0.9} ${575 + dx / 2} ${500 + dy / 2})`}>
-              <ellipse cx={575 + dx / 2} cy={500 + dy / 2} rx="9" ry="38" fill={i % 2 ? "#1c3e46" : "#152f3a"} stroke="#5ec4b0" strokeOpacity="0.25" className="sway" style={{ animationDelay: `${i * 0.35}s` }} />
+            <g key={i} transform={`rotate(${dx * 0.9} ${575 + dx / 2} ${516 + dy / 2})`}>
+              <ellipse cx={575 + dx / 2} cy={516 + dy / 2} rx="9" ry="38" fill={i % 2 ? "#1f4a4f" : "#163a40"} stroke="#6fd6c0" strokeOpacity="0.25" className="sway" style={{ animationDelay: `${i * 0.35}s` }} />
             </g>
           ))}
-          <path d="M552 500 L598 500 L592 524 L558 524 Z" fill="#1b1542" stroke="#4a3ab0" strokeOpacity="0.6" />
+          <path d="M550 512 L600 512 L594 544 Q575 548 556 544 Z" fill="url(#ns-pot)" />
+          <ellipse cx="575" cy="512" rx="25" ry="4" fill="#2a2450" />
         </g>
+
+        {/* stack of books, front-left */}
+        <ellipse cx="660" cy="586" rx="78" ry="6" fill="#000" opacity="0.6" filter="url(#ns-blur5)" />
+        {[
+          { y: 562, x: 606, w: 112, c: "#2b2f6e", t: "PYTHON" },
+          { y: 548, x: 612, w: 102, c: "#4a2a74", t: "SYSTEMS" },
+          { y: 535, x: 602, w: 118, c: "#1f4d5c", t: "LLMs" },
+          { y: 523, x: 616, w: 96, c: "#5a3a2a", t: "EVALS" },
+        ].map((b) => (
+          <g key={b.t}>
+            {/* pages (cream edge) */}
+            <rect x={b.x + 4} y={b.y - 1} width={b.w - 6} height="13" rx="1.5" fill="#d9d2c4" />
+            {[3, 6, 9].map((k) => <line key={k} x1={b.x + 6} x2={b.x + b.w - 4} y1={b.y - 1 + k} y2={b.y - 1 + k} stroke="#b9b1a2" strokeWidth="0.5" />)}
+            {/* spine + cover */}
+            <rect x={b.x} y={b.y} width={b.w * 0.42} height="13" rx="1.5" fill={b.c} />
+            <rect x={b.x} y={b.y} width="2" height="13" fill="#000" opacity="0.3" />
+            <path d={`M${b.x} ${b.y + 0.6} L${b.x + b.w * 0.42} ${b.y + 0.6}`} stroke="#fff" strokeOpacity="0.25" strokeWidth="0.8" />
+            <text x={b.x + 5} y={b.y + 9.3} fontFamily="Sora Variable, sans-serif" fontWeight="700" fontSize="7" letterSpacing="0.6" fill="#ece6ff" opacity="0.85">{b.t}</text>
+          </g>
+        ))}
+        {/* violet rim from the monitor on the top book */}
+        <path d="M616 523 L712 523" stroke="#c9bcff" strokeOpacity="0.6" strokeWidth="1.2" />
 
         {/* ---------- main monitor ---------- */}
         {/* ambient back-light on the wall */}
@@ -417,16 +449,65 @@ export default function NightScene({ className = "", crop = false, showPerson = 
         <rect x="868" y="487" width="26" height="3" rx="1.5" fill="#3a3550" />
 
         {/* ---------- laptop with eval scores ---------- */}
+        <ellipse cx="1430" cy="556" rx="130" ry="8" fill="#000" opacity="0.6" filter="url(#ns-blur5)" />
         <g>
-          <path d="M1336 414 L1530 404 L1534 520 L1340 524 Z" fill="#06051a" stroke="#4a3ab0" strokeWidth="1.5" />
-          <path d="M1344 422 L1524 413 L1527 512 L1347 516 Z" fill="#0d0b22" />
-          <text x="1356" y="438" fontFamily="JetBrains Mono, monospace" fontSize="9" fill="#9d8cff" transform="rotate(-3 1356 438)">eval score</text>
-          <polyline points="1356,500 1384,494 1410,486 1436,470 1462,466 1488,448 1512,440" fill="none" stroke="#34d399" strokeWidth="2.5" className="draw-line" filter="url(#ns-glow)" />
-          <path d="M1320 524 L1550 520 L1560 532 L1312 536 Z" fill="#1b1542" />
+          {/* lid */}
+          <path d="M1338 420 L1528 410 L1532 528 L1342 534 Z" fill="url(#ns-bezel)" stroke="#8e88b0" strokeOpacity="0.4" strokeWidth="1" />
+          <path d="M1346 428 L1522 419 L1525 520 L1349 525 Z" fill="#0a0919" />
+          <text x="1358" y="444" fontFamily="JetBrains Mono, monospace" fontSize="9" fill="#9d8cff" transform="rotate(-3 1358 444)">eval score</text>
+          {[0, 1, 2, 3].map((k) => <line key={k} x1="1356" x2="1516" y1={470 + k * 14} y2={469 + k * 14 - 3} stroke="#2a2550" strokeWidth="0.6" />)}
+          <polyline points="1358,508 1386,502 1412,494 1438,478 1464,474 1490,456 1514,448" fill="none" stroke="#34d399" strokeWidth="2.5" className="draw-line" filter="url(#ns-glow)" />
+          <path d="M1346 428 L1430 424 L1360 522 L1349 525 Z" fill="#fff" opacity="0.03" />
+          {/* base with keyboard deck */}
+          <path d="M1330 534 L1544 528 L1566 552 L1312 560 Z" fill="url(#ns-metal)" />
+          <path d="M1330 534 L1544 528" stroke="#c9c3e6" strokeOpacity="0.45" strokeWidth="1" />
+          <path d="M1350 538 L1530 533 L1544 546 L1338 552 Z" fill="#100d1e" />
+          <path d="M1312 560 L1566 552 L1566 556 L1312 564 Z" fill="#0a0814" />
+        </g>
+
+        {/* ---------- desk mat, keyboard, mouse (centred under the monitor) ---------- */}
+        <path d="M700 540 L1210 540 L1236 600 L676 600 Z" fill="#0c0a22" stroke="#7c5cff" strokeOpacity="0.3" strokeWidth="1.2" />
+        <path d="M700 540 L1210 540" stroke="#b7a8ff" strokeOpacity="0.25" />
+        {/* keyboard */}
+        <ellipse cx="881" cy="592" rx="178" ry="7" fill="#000" opacity="0.65" filter="url(#ns-blur5)" />
+        <path d="M712 590 L1050 590" stroke="url(#ns-rgb)" strokeWidth="5" opacity="0.85" filter="url(#ns-blur5)" />
+        <path d="M734 548 L1028 548 L1048 586 L714 586 Z" fill="url(#ns-kbd)" />
+        <path d="M734 548 L1028 548" stroke="#b7a8ff" strokeOpacity="0.5" strokeWidth="1" />
+        <path d="M714 586 L1048 586 L1047 592 L715 592 Z" fill="#06050d" />
+        {Array.from({ length: 5 }, (_, r) => {
+          const t0 = (r * 7 + 1.5) / 38, t1 = (r * 7 + 7) / 38
+          const y0 = 548 + r * 7 + 1.5, y1 = y0 + 5.4
+          const l0 = 734 - 20 * t0 + 4, r0 = 1028 + 20 * t0 - 4
+          const keys = r === 4 ? [1.4, 1.2, 1.2, 6.5, 1.2, 1.2, 1.4] : Array.from({ length: 14 }, () => 1)
+          const units = keys.reduce((a2, k) => a2 + k, 0)
+          const gap = 1.6
+          const span = r0 - l0 - gap * (keys.length - 1)
+          let x = l0
+          return keys.map((k, c) => {
+            const w = (span * k) / units
+            const el = (
+              <g key={`${r}-${c}`}>
+                <rect x={x} y={y0} width={w} height={y1 - y0} rx="1.1" fill="#120f22" />
+                <rect x={x + 0.5} y={y0} width={w - 1} height={y1 - y0 - 1.4} rx="1" fill="url(#ns-key)" className={(r * 14 + c) % 6 === 0 ? "keypress" : undefined} style={{ animationDelay: `${((r * 14 + c) * 0.19) % 2}s` }} />
+              </g>
+            )
+            x += w + gap
+            void t1
+            return el
+          })
+        })}
+        {/* mouse */}
+        <ellipse cx="1124" cy="588" rx="22" ry="5" fill="#000" opacity="0.7" filter="url(#ns-blur5)" />
+        <g className="mouse-idle" transform="rotate(-8 1122 566)">
+          <path d="M1122 544 C 1136 544, 1140 556, 1140 568 C 1140 582, 1132 590, 1122 590 C 1112 590, 1104 582, 1104 568 C 1104 556, 1108 544, 1122 544 Z" fill="url(#ns-mouse)" />
+          <path d="M1122 545 L1122 562" stroke="#05040c" strokeWidth="1" />
+          <path d="M1108 556 C 1110 548, 1116 545, 1121 545" stroke="#d8d0ff" strokeOpacity="0.6" strokeWidth="1.2" fill="none" />
+          <rect x="1120.5" y="550" width="3" height="7" rx="1.5" fill="#22d3ee" filter="url(#ns-glow)" />
         </g>
 
         {/* ---------- Jagannath (drawn in a 640-wide space, scaled into the scene) ---------- */}
         <g transform="translate(534 -13) scale(1.35)">
+          {showPerson && (<>
           {/* mechanical keyboard with RGB under-glow */}
           <path d="M196 434 L418 434" stroke="url(#ns-rgb)" strokeWidth="4" opacity="0.9" filter="url(#ns-blur2)" />
           <path d="M204 400 L410 400 L422 428 L192 428 Z" fill="url(#ns-kbd)" stroke="#6b5ae0" strokeOpacity="0.45" strokeWidth="0.8" />
@@ -451,6 +532,7 @@ export default function NightScene({ className = "", crop = false, showPerson = 
             <rect x="605" y="408" width="2" height="3.5" rx="1" fill="#22d3ee" filter="url(#ns-glow)" />
           </g>
 
+          </>)}
           {showPerson && (
           <>
           {/* cross-legged on the chair: knees stick out on both sides */}
@@ -575,6 +657,31 @@ export default function NightScene({ className = "", crop = false, showPerson = 
           })}
         </g>
 
+
+          {/* ---------- glass quote board, hung on the wall left of the window ---------- */}
+          {quote && (
+            <g transform="rotate(-4 805 0)">
+              <g className="floaty">
+                <rect x="650" y="-78" width="312" height="150" rx="18" fill="#0c0826" fillOpacity="0.55" stroke="#c9bcff" strokeOpacity="0.7" strokeWidth="2" filter="url(#ns-glow)" />
+                <rect x="650" y="-78" width="312" height="150" rx="18" fill="none" stroke="#efeaff" strokeOpacity="0.35" strokeWidth="1" />
+                <text fontFamily="Caveat, cursive" fill="#ece6ff" fontSize="38">
+                  <tspan x="676" y="-28">&ldquo;{quote.slice(0, quote.lastIndexOf(",") + 1)}</tspan>
+                  <tspan x="676" y="12">{quote.slice(quote.lastIndexOf(",") + 1).trim()}&rdquo;</tspan>
+                </text>
+                <text x="936" y="52" textAnchor="end" fontFamily="Caveat, cursive" fontSize="24" letterSpacing="3" fill="#ece6ff" opacity="0.85">— {author}</text>
+              </g>
+            </g>
+          )}
+
+          {/* ---------- "right now" card, under the desk, centred on the keyboard ---------- */}
+          {status.length > 0 && (
+            <foreignObject x="736" y="644" width="300" height="88">
+              <div className="h-full rounded-xl border border-white/10 bg-[#0a0720]/85 px-4 py-3 backdrop-blur-md">
+                <p className="eyebrow !text-[10px]">// right now</p>
+                <p className="mt-1.5 leading-snug"><StatusTicker lines={status} /></p>
+              </div>
+            </foreignObject>
+          )}
         </g>
 
         {/* film grain + vignette for the painted feel */}

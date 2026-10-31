@@ -71,19 +71,8 @@ export default function Home() {
             />
           ) : (
             /* Full-bleed illustrated night scene */
-            <NightScene className="pointer-events-none absolute inset-0 hidden lg:block" />
+            <NightScene className="pointer-events-none absolute inset-0 hidden lg:block" quote={hero.quote} author={site.short.toUpperCase()} status={statusLines} />
           )}
-          {/* glass quote board */}
-          <div className="pointer-events-none absolute left-[52%] top-[13%] z-10 hidden w-72 rotate-[-5deg] lg:block">
-            <div className="floaty rounded-2xl border border-violet-soft/50 bg-[#0c0826]/45 px-6 py-5 shadow-[0_0_40px_-6px_rgba(124,92,255,0.75),inset_0_0_24px_rgba(124,92,255,0.18)] backdrop-blur-[2px]">
-              <p className="font-hand text-[32px] leading-[1.1] text-[#e6e0ff]">&ldquo;{hero.quote}&rdquo;</p>
-              <p className="mt-2 text-right font-hand text-xl tracking-[0.2em] text-[#e6e0ff]/85">— {site.short.toUpperCase()}</p>
-            </div>
-          </div>
-          <div className={`absolute bottom-[12%] left-[50%] z-10 hidden w-64 rounded-xl border border-white/10 bg-[#0a0720]/80 p-4 backdrop-blur-md lg:block`}>
-            <p className="eyebrow !text-[10px]">// right now</p>
-            <p className="mt-2 min-h-[2.5rem] leading-snug"><StatusTicker lines={statusLines} /></p>
-          </div>
 
           <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-20">
             <div className="max-w-2xl">
@@ -97,7 +86,7 @@ export default function Home() {
                 <br />
                 <span className="grad">{hero.headline[1]}</span>
               </p>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">{hero.bio}</p>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted lg:max-w-[31rem]">{hero.bio}</p>
 
               <div className="mt-9 flex flex-wrap gap-3">
                 <a href="#projects" className="btn-primary">View My Work <ArrowRight size={16} aria-hidden /></a>
@@ -125,11 +114,7 @@ export default function Home() {
 
               <div className="mt-12 lg:hidden">
                 <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_0_60px_-20px_rgba(124,92,255,0.8)]">
-                  <NightScene crop className="aspect-[4/3] w-full" />
-                </div>
-                <div className="mx-auto -mt-8 w-fit max-w-[90%] rounded-xl border border-white/10 bg-[#0a0720]/85 px-4 py-3 backdrop-blur-md">
-                  <p className="eyebrow !text-[10px]">// right now</p>
-                  <p className="mt-1.5"><StatusTicker lines={statusLines} /></p>
+                  <NightScene crop className="aspect-[4/3] w-full" status={statusLines} />
                 </div>
               </div>
             </div>
