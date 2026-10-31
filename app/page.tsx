@@ -8,7 +8,9 @@ import Reveal from "@/components/reveal"
 import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
 import ContactForm from "@/components/contact-form"
-import { site, hero, about, projects, experience, skills, stats, education, certifications } from "@/lib/data"
+import Robot from "@/components/robot"
+import Assistant, { type QA } from "@/components/assistant"
+import { site, hero, robotLines, about, projects, experience, skills, stats, education, certifications } from "@/lib/data"
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const
 
@@ -31,9 +33,26 @@ function Section({ id, children, className = "" }: { id: string; children: React
 export default function Home() {
   const statIcons = [Code2, Briefcase, BarChart3, Heart]
 
+  // J-Bot's answers come straight from lib/data.ts.
+  const companyWork = projects.filter((p) => p.company).map((p) => p.title)
+  const qa: QA[] = [
+    { q: "What does he build?", a: hero.bio, jump: "about" },
+    {
+      q: "Show me his work",
+      a: companyWork.length
+        ? `At ${experience[0].company} he has worked on ${companyWork.join(", ")}. Scrolling you to the projects now.`
+        : `Here are his projects. Scrolling you there now.`,
+      jump: "projects",
+    },
+    { q: "Where has he worked?", a: experience.map((j) => `• ${j.role}, ${j.company} (${j.period})`).join("\n"), jump: "experience" },
+    { q: "What's his stack?", a: `Strongest in: ${[...skills].sort((a, b) => b.level - a.level).slice(0, 8).map((s) => s.name).join(", ")}.`, jump: "skills" },
+    { q: "How do I reach him?", a: `Email ${site.email}, or use the contact form. He's ${site.openToWork ? "open to new opportunities" : "happy to chat"}.`, jump: "contact" },
+  ]
+
   return (
     <>
       <Reveal />
+      <Assistant greeting={`Hi! I'm J-Bot. I know all about ${site.short}'s work. What would you like to know?`} qa={qa} />
       <Nav name={site.short} initials={site.initials} linkedin={site.linkedin} />
 
       <main>
@@ -42,32 +61,20 @@ export default function Home() {
           <HeroCanvas />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-night via-night/70 to-transparent" />
 
-          {/* portrait + floating cards on the art side */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[46%] items-center justify-center lg:flex">
+          {/* J-Bot on the art side */}
+          <div className="absolute inset-y-0 right-0 hidden w-[46%] items-center justify-center pt-10 lg:flex">
             <div className="relative">
-              <div className="absolute -inset-10 rounded-full bg-violet/25 blur-3xl" />
-              <img
-                src="/profile.webp"
-                alt={`Portrait of ${site.name}`}
-                width={320}
-                height={320}
-                fetchPriority="high"
-                className="relative h-80 w-80 rounded-full object-cover ring-1 ring-violet/40 shadow-[0_0_80px_-10px_rgb(124_92_255_/_0.7)] xl:h-96 xl:w-96"
-              />
-              <div className="floaty absolute -right-16 -top-10 w-56 rotate-[-4deg] rounded-2xl border border-violet/30 bg-night/70 p-4 shadow-glow backdrop-blur">
-                <p className="font-hand text-2xl leading-tight text-violet-soft">&ldquo;Ship it, measure it, make it better.&rdquo;</p>
-                <p className="mt-1 text-right font-mono text-[10px] tracking-[0.3em] text-muted">— {site.short.toUpperCase()}</p>
-              </div>
-              <div className="absolute -bottom-6 -left-20 w-60 rounded-xl border border-line bg-night/80 p-4 backdrop-blur">
+              <div className="pointer-events-none absolute -inset-16 rounded-full bg-violet/20 blur-3xl" />
+              <Robot lines={robotLines} />
+              <div className="pointer-events-none absolute -left-44 bottom-24 w-52 rounded-xl border border-line bg-night/80 p-3.5 backdrop-blur">
                 <p className="eyebrow !text-[10px]">// currently</p>
-                <p className="mt-2 text-sm leading-snug text-ink">{hero.currently}</p>
+                <p className="mt-1.5 text-sm leading-snug text-ink">{hero.currently}</p>
               </div>
             </div>
           </div>
 
           <div className="relative mx-auto w-full max-w-6xl px-5 py-20">
             <div className="max-w-2xl">
-              <img src="/profile.webp" alt="" width={320} height={320} className="mb-8 h-20 w-20 rounded-full object-cover ring-1 ring-violet/40 shadow-glow lg:hidden" />
               <p className="eyebrow"><Typed text="// Hello, I'm" /></p>
               <h1 className="mt-4 font-display text-6xl font-extrabold leading-none tracking-[-0.04em] sm:text-8xl lg:text-[7.5rem]">
                 <span className="bg-gradient-to-r from-white via-[#d9d2ff] to-violet bg-clip-text text-transparent">{site.short}</span>
@@ -137,6 +144,14 @@ export default function Home() {
             </div>
 
             <div className="card reveal p-6">
+              <div className="mb-6 flex items-center gap-4 border-b border-line pb-6">
+                <img src="/profile.webp" alt={`Portrait of ${site.name}`} width={320} height={320} loading="lazy" className="h-20 w-20 rounded-2xl object-cover ring-1 ring-violet/40 shadow-glow" />
+                <div>
+                  <p className="font-display text-lg font-bold">{site.name}</p>
+                  <p className="text-sm text-violet-soft">{site.role}</p>
+                  <p className="mt-0.5 text-xs text-muted">{site.location}</p>
+                </div>
+              </div>
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-lg font-bold">What I enjoy</h3>
                 <Sparkles size={17} className="text-violet-soft" aria-hidden />

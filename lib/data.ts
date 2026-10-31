@@ -30,6 +30,15 @@ export const hero = {
   currently: "Building LLM-powered developer tools at Bilvantis", // VERIFY
 }
 
+// Status lines J-Bot types out in the hero. Keep them about the kind of work you do.
+export const robotLines = [
+  "Reviewing a pull request with an LLM…",
+  "Retrieving context from the codebase…",
+  "Calling tool: run_static_analysis()",
+  "Grounding the answer in sources ✓",
+  "Shipping it to production 🚀",
+]
+
 export const about = {
   headline: ["Engineer first,", "AI by choice."],
   // VERIFY
@@ -50,7 +59,7 @@ export const about = {
   ],
 }
 
-export type Category = "AI / ML" | "Web Apps" | "Tools"
+export type Category = "Company" | "AI / ML" | "Web Apps" | "Tools"
 
 export type Project = {
   title: string
@@ -60,10 +69,26 @@ export type Project = {
   code?: string
   demo?: string
   featured?: boolean
+  // Company work: set `company` and leave code/demo empty. The card shows
+  // "Built at <company>" and expands to show `highlights`.
+  company?: string
+  role?: string
+  highlights?: string[]
 }
 
-// Put AI projects first — they are what a recruiter for an AI role looks for.
-// Template:
+// Put company and AI projects first — they are what a recruiter for an AI role looks for.
+// Company project template (no source link needed):
+// {
+//   title: "Project name",
+//   category: "Company",
+//   company: "Bilvantis",
+//   role: "AI Engineer",
+//   tags: ["LangChain", "Python", "VS Code API"],
+//   summary: "One line on what it does and who uses it.",
+//   highlights: ["What you built", "A measurable result", "An interesting technical decision"],
+//   featured: true,
+// },
+// Personal project template:
 // {
 //   title: "Docs Q&A assistant",
 //   category: "AI / ML",
