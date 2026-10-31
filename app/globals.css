@@ -170,3 +170,14 @@ body {
   animation: laptop-scan 3.2s linear infinite;
 }
 @keyframes laptop-scan { from { transform: translateX(-20px); } to { transform: translateX(100px); } }
+
+/* ---------- typing figure ---------- */
+.tap-a { animation: tap-a 0.26s ease-in-out infinite alternate; }
+.tap-b { animation: tap-b 0.22s ease-in-out infinite alternate; animation-delay: -0.11s; }
+@keyframes tap-a { 0% { transform: translate(0, 0); } 40% { transform: translate(0.5px, 1.9px) scaleY(0.98); } 100% { transform: translate(-0.3px, 0.2px); } }
+@keyframes tap-b { 0% { transform: translate(0, 0.2px); } 50% { transform: translate(-0.6px, 2.1px) scaleY(0.975); } 100% { transform: translate(0.3px, 0); } }
+.pose-nod { animation: pose-nod 1.6s ease-in-out infinite; }
+@keyframes pose-nod { 0%, 100% { transform: rotate(0deg) translateY(0); } 30% { transform: rotate(0.9deg) translateY(0.8px); } 65% { transform: rotate(0.3deg) translateY(0.3px); } }
+.pose-think { transition: transform 0.7s cubic-bezier(.4,0,.2,1); transform: rotate(-1.6deg) translateY(-1.2px); }
+.pose-rest { transition: transform 0.7s cubic-bezier(.4,0,.2,1); transform: none; }
+@media (prefers-reduced-motion: reduce) { .tap-a, .tap-b, .pose-nod { animation: none; } }

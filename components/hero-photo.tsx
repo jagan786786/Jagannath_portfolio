@@ -118,6 +118,25 @@ export default function HeroPhoto({
   }, [])
 
   const coding = !typing.thinking && typing.phase === "typing"
+  // largest candidate in srcSet (works for data: URLs too, which contain commas)
+  const bgSrc = (srcSet && srcSet.trim().match(/(\S+)\s+\d+w\s*$/)?.[1]) || src
+
+  // Pieces of the photo that move: cut out with a soft edge, animated in place.
+  const piece = (x: number, y: number, w: number, h: number, cls: string, origin: string, extra: React.CSSProperties = {}) => (
+    <div
+      className={`absolute ${cls}`}
+      style={{
+        left: x, top: y, width: w, height: h,
+        backgroundImage: `url(${bgSrc})`,
+        backgroundSize: `${IW}px ${IH}px`,
+        backgroundPosition: `${-x}px ${-y}px`,
+        transformOrigin: origin,
+        WebkitMaskImage: "radial-gradient(closest-side, #000 62%, transparent 100%)",
+        maskImage: "radial-gradient(closest-side, #000 62%, transparent 100%)",
+        ...extra,
+      }}
+    />
+  )
 
   return (
     <div ref={box} className={`overflow-hidden ${className}`}>
@@ -147,6 +166,11 @@ export default function HeroPhoto({
               style={{ left: p.x, top: p.y, width: p.s, height: p.s, background: i % 3 ? "#ffd9a0" : "#d4c8ff", boxShadow: `0 0 ${p.s * 3}px ${i % 3 ? "#ffcf8a" : "#b9a9ff"}`, animationDelay: `${p.d}s`, animationDuration: `${2.5 + p.d}s` }}
             />
           ))}
+
+          {/* ---- he moves: head nods while typing, tilts back while thinking; hands tap ---- */}
+          {piece(452, 96, 168, 214, typing.thinking ? "pose-think" : coding ? "pose-nod" : "pose-rest", "70% 92%")}
+          {piece(592, 376, 62, 46, coding ? "tap-a" : "", "50% 100%")}
+          {piece(668, 392, 64, 52, coding ? "tap-b" : "", "50% 100%")}
 
           {/* screen light on his face: flickers while he types, steadies while he thinks */}
           <div
