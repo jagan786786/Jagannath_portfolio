@@ -164,7 +164,7 @@ function Editor({ snip, typed, phase, si, thinking }: ReturnType<typeof useTypin
   )
 }
 
-export default function NightScene({ className = "", crop = false }: { className?: string; crop?: boolean }) {
+export default function NightScene({ className = "", crop = false, showPerson = false }: { className?: string; crop?: boolean; showPerson?: boolean }) {
   const wrap = useRef<HTMLDivElement>(null)
   const visible = useRef(true)
   const typing = useTyping(visible)
@@ -451,6 +451,8 @@ export default function NightScene({ className = "", crop = false }: { className
             <rect x="605" y="408" width="2" height="3.5" rx="1" fill="#22d3ee" filter="url(#ns-glow)" />
           </g>
 
+          {showPerson && (
+          <>
           {/* cross-legged on the chair: knees stick out on both sides */}
           <path d="M424 548 C 402 538, 360 542, 346 562 C 338 578, 350 594, 372 596 C 394 598, 416 590, 428 582 Z" fill="url(#ns-denim)" />
           <path d="M424 548 C 402 538, 360 542, 346 562" stroke="#b7a8ff" strokeOpacity="0.6" strokeWidth="2" fill="none" filter="url(#ns-blur2)" />
@@ -552,6 +554,8 @@ export default function NightScene({ className = "", crop = false }: { className
           <path d="M412 486 C 412 470, 422 462, 438 462 L 532 462" stroke="#8f7bff" strokeOpacity="0.55" strokeWidth="2" fill="none" />
           <path d="M412 486 L 408 660" stroke="#8f7bff" strokeOpacity="0.35" strokeWidth="2" />
           <rect x="470" y="500" width="28" height="4" rx="2" fill="#7c5cff" opacity="0.6" />
+          </>
+          )}
         </g>
 
         {/* ---------- glowing Earth in the foreground ---------- */}
