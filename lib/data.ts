@@ -30,8 +30,8 @@ export const hero = {
   currently: "Building LLM-powered developer tools at Bilvantis", // VERIFY
 }
 
-// Status lines J-Bot types out in the hero. Keep them about the kind of work you do.
-export const robotLines = [
+// Status lines typed out in the hero's "// right now" card. Keep them about the kind of work you do.
+export const statusLines = [
   "Reviewing a pull request with an LLM…",
   "Retrieving context from the codebase…",
   "Calling tool: run_static_analysis()",
@@ -152,34 +152,56 @@ export const experience: Job[] = [
   },
 ]
 
-export type SkillGroup = "AI" | "Programming" | "Backend" | "Frontend" | "Databases" | "Tools"
+export type SkillGroup = "Programming" | "AI" | "Backend" | "Frontend" | "Databases" | "Developer Tools" | "DevOps"
 
-// level is a rough self-rating out of 100. VERIFY all of these.
-export const skills: { name: string; group: SkillGroup; level: number }[] = [
-  { name: "Python", group: "Programming", level: 88 },
-  { name: "LLM APIs", group: "AI", level: 85 },
-  { name: "RAG & Embeddings", group: "AI", level: 80 },
-  { name: "Prompt Engineering", group: "AI", level: 85 },
-  { name: "LangChain", group: "AI", level: 75 },
-  { name: "Agents & Tool Calling", group: "AI", level: 75 },
-  { name: "Vector Databases", group: "AI", level: 72 },
-  { name: "FastAPI", group: "Backend", level: 80 },
-  { name: "TypeScript", group: "Programming", level: 80 },
-  { name: "Java", group: "Programming", level: 82 },
-  { name: "Spring Boot", group: "Backend", level: 78 },
-  { name: "Node.js", group: "Backend", level: 80 },
-  { name: "React", group: "Frontend", level: 82 },
-  { name: "Next.js", group: "Frontend", level: 80 },
-  { name: "Tailwind CSS", group: "Frontend", level: 85 },
-  { name: "PostgreSQL", group: "Databases", level: 78 },
-  { name: "MongoDB", group: "Databases", level: 75 },
-  { name: "MySQL", group: "Databases", level: 80 },
-  { name: "Git", group: "Tools", level: 88 },
-  { name: "Docker", group: "Tools", level: 65 },
+export type Skill = {
+  name: string
+  group: SkillGroup
+  level: number // rough self-rating out of 100 — VERIFY all of these
+  icon?: string // a key from lib/brand-icons.ts; concept skills use `glyph` instead
+  glyph?: "rag" | "prompt" | "agent" | "vector" | "eval" | "llm"
+  top?: boolean // shown in the default "All" view
+}
+
+export const skills: Skill[] = [
+  { name: "Python", group: "Programming", level: 90, icon: "python", top: true },
+  { name: "LLM APIs", group: "AI", level: 85, glyph: "llm", top: true },
+  { name: "RAG & Embeddings", group: "AI", level: 82, glyph: "rag", top: true },
+  { name: "LangChain", group: "AI", level: 78, icon: "langchain", top: true },
+  { name: "FastAPI", group: "Backend", level: 85, icon: "fastapi", top: true },
+  { name: "TypeScript", group: "Programming", level: 80, icon: "typescript", top: true },
+  { name: "React", group: "Frontend", level: 82, icon: "react", top: true },
+  { name: "Git", group: "Developer Tools", level: 90, icon: "git", top: true },
+  { name: "Prompt Engineering", group: "AI", level: 88, glyph: "prompt" },
+  { name: "Agents & Tool Calling", group: "AI", level: 76, glyph: "agent" },
+  { name: "Vector Databases", group: "AI", level: 74, glyph: "vector" },
+  { name: "LLM Evaluation", group: "AI", level: 70, glyph: "eval" },
+  { name: "Gemini", group: "AI", level: 80, icon: "googlegemini" },
+  { name: "Hugging Face", group: "AI", level: 65, icon: "huggingface" },
+  { name: "Java", group: "Programming", level: 82, icon: "openjdk" },
+  { name: "JavaScript", group: "Programming", level: 82, icon: "javascript" },
+  { name: "C", group: "Programming", level: 70, icon: "c" },
+  { name: "Node.js", group: "Backend", level: 80, icon: "nodedotjs" },
+  { name: "Spring Boot", group: "Backend", level: 76, icon: "springboot" },
+  { name: "Express", group: "Backend", level: 78, icon: "express" },
+  { name: "NestJS", group: "Backend", level: 68, icon: "nestjs" },
+  { name: "Next.js", group: "Frontend", level: 80, icon: "nextdotjs" },
+  { name: "Tailwind CSS", group: "Frontend", level: 86, icon: "tailwindcss" },
+  { name: "Flutter", group: "Frontend", level: 60, icon: "flutter" },
+  { name: "PostgreSQL", group: "Databases", level: 78, icon: "postgresql" },
+  { name: "MongoDB", group: "Databases", level: 76, icon: "mongodb" },
+  { name: "MySQL", group: "Databases", level: 80, icon: "mysql" },
+  { name: "GitHub", group: "Developer Tools", level: 88, icon: "github" },
+  { name: "Postman", group: "Developer Tools", level: 80, icon: "postman" },
+  { name: "Docker", group: "DevOps", level: 65, icon: "docker" },
+  { name: "Linux", group: "DevOps", level: 70, icon: "linux" },
 ]
 
+// Icons orbiting the "AI core" beside the skills grid.
+export const orbitIcons = ["python", "langchain", "googlegemini", "huggingface", "fastapi", "react", "docker", "postgresql"]
+
 export const stats = [
-  { value: "15+", label: "Technologies" },
+  { value: "30+", label: "Technologies" },
   { value: "3", label: "Roles & internships" },
   { value: "8.4", label: "CGPA" },
   { value: "Always", label: "Shipping" },

@@ -6,6 +6,7 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
   color-scheme: dark;
+  overflow-x: clip;
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -14,6 +15,7 @@ html {
 
 body {
   @apply bg-night font-sans text-ink antialiased;
+  overflow-x: clip;
 }
 
 ::selection { background: rgb(124 92 255 / 0.4); }
@@ -96,3 +98,28 @@ body {
 
 @keyframes pop-in { from { opacity: 0; transform: translateY(12px) scale(0.97); } }
 .pop-in { animation: pop-in 220ms ease-out; }
+
+/* ---------- coder scene ---------- */
+.twinkle { animation: twinkle 3.2s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: 0.25; } }
+.sway { transform-box: fill-box; transform-origin: bottom center; animation: sway 5s ease-in-out infinite; }
+@keyframes sway { 50% { transform: rotate(4deg); } }
+.steam { stroke-dasharray: 34; animation: steam 3s linear infinite; }
+@keyframes steam { 0% { stroke-dashoffset: 34; opacity: 0; } 30% { opacity: 1; } 100% { stroke-dashoffset: -34; opacity: 0; } }
+.keypress { animation: keypress 0.9s steps(1) infinite; }
+@keyframes keypress { 50% { fill: #7c5cff; } }
+.finger { transform-box: fill-box; animation: finger 0.32s ease-in-out infinite alternate; }
+@keyframes finger { to { transform: translateY(-2.5px); } }
+.typing-hand { transform-box: fill-box; animation: hand 1.8s ease-in-out infinite; }
+@keyframes hand { 25% { transform: translateX(6px); } 60% { transform: translateX(-4px); } }
+.head-bob { transform-box: view-box; transform-origin: 462px 312px; animation: head-bob 4.5s ease-in-out infinite; }
+@keyframes head-bob { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(-2.2deg); } 60% { transform: rotate(1deg); } }
+.mouse-move { animation: mouse-move 6s ease-in-out infinite; }
+@keyframes mouse-move { 0%, 70%, 100% { transform: translate(0, 0); } 78% { transform: translate(-3px, 2px); } 86% { transform: translate(2px, -1px); } }
+.hero-art { -webkit-mask-image: radial-gradient(ellipse 70% 78% at 62% 50%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 70% 78% at 62% 50%, #000 55%, transparent 100%); }
+.hero-art-mobile svg { -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 50%, #000 60%, transparent 100%); mask-image: radial-gradient(ellipse 75% 75% at 50% 50%, #000 60%, transparent 100%); }
+.orbit-cw { animation: orbit 40s linear infinite; }
+.orbit-ccw { animation: orbit 60s linear infinite reverse; }
+.orbit-cw .orbit-counter { animation: orbit 40s linear infinite reverse; }
+.orbit-ccw .orbit-counter { animation: orbit 60s linear infinite; }
+@keyframes orbit { to { transform: rotate(360deg); } }

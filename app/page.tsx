@@ -7,10 +7,12 @@ import Typed from "@/components/typed"
 import Reveal from "@/components/reveal"
 import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
+import SkillOrbit from "@/components/skill-orbit"
 import ContactForm from "@/components/contact-form"
-import Robot from "@/components/robot"
+import CoderScene from "@/components/coder-scene"
+import StatusTicker from "@/components/status-ticker"
 import Assistant, { type QA } from "@/components/assistant"
-import { site, hero, robotLines, about, projects, experience, skills, stats, education, certifications } from "@/lib/data"
+import { site, hero, statusLines, about, projects, experience, skills, orbitIcons, stats, education, certifications } from "@/lib/data"
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const
 
@@ -33,7 +35,7 @@ function Section({ id, children, className = "" }: { id: string; children: React
 export default function Home() {
   const statIcons = [Code2, Briefcase, BarChart3, Heart]
 
-  // J-Bot's answers come straight from lib/data.ts.
+  // The AI twin's answers come straight from lib/data.ts.
   const companyWork = projects.filter((p) => p.company).map((p) => p.title)
   const qa: QA[] = [
     { q: "What does he build?", a: hero.bio, jump: "about" },
@@ -52,31 +54,28 @@ export default function Home() {
   return (
     <>
       <Reveal />
-      <Assistant greeting={`Hi! I'm J-Bot. I know all about ${site.short}'s work. What would you like to know?`} qa={qa} />
+      <Assistant name={site.short} avatar="/profile.webp" greeting={`Hi! I'm ${site.short}'s AI twin. Ask me about his work, experience or stack.`} qa={qa} />
       <Nav name={site.short} initials={site.initials} linkedin={site.linkedin} />
 
       <main>
         {/* ------------------------------------------------------------ Hero */}
         <section id="home" className="relative flex min-h-[100svh] items-center overflow-hidden pt-16">
           <HeroCanvas />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-night via-night/70 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 30%, rgba(5,3,13,0.6) 44%, rgba(5,3,13,0) 60%)" }} />
 
-          {/* J-Bot on the art side */}
-          <div className="absolute inset-y-0 right-0 hidden w-[46%] items-center justify-center pt-10 lg:flex">
-            <div className="relative">
-              <div className="pointer-events-none absolute -inset-16 rounded-full bg-violet/20 blur-3xl" />
-              <Robot lines={robotLines} />
-              <div className="pointer-events-none absolute -left-44 bottom-24 w-52 rounded-xl border border-line bg-night/80 p-3.5 backdrop-blur">
-                <p className="eyebrow !text-[10px]">// currently</p>
-                <p className="mt-1.5 text-sm leading-snug text-ink">{hero.currently}</p>
-              </div>
-            </div>
+          {/* Illustrated Jagannath coding at his desk (desktop: full-bleed on the right) */}
+          <div className="hero-art pointer-events-none absolute inset-y-0 right-0 hidden w-[56%] items-center justify-center pt-16 lg:flex">
+            <CoderScene className="w-full max-w-[780px]" />
+          </div>
+          <div className="absolute right-[34%] top-[13%] z-10 hidden w-64 rounded-xl border border-line bg-night/75 p-4 backdrop-blur-md lg:block">
+            <p className="eyebrow !text-[10px]">// right now</p>
+            <p className="mt-2 min-h-[2.5rem] leading-snug"><StatusTicker lines={statusLines} /></p>
           </div>
 
-          <div className="relative mx-auto w-full max-w-6xl px-5 py-20">
+          <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-20">
             <div className="max-w-2xl">
               <p className="eyebrow"><Typed text="// Hello, I'm" /></p>
-              <h1 className="mt-4 font-display text-6xl font-extrabold leading-none tracking-[-0.04em] sm:text-8xl lg:text-[7.5rem]">
+              <h1 className="mt-4 font-display text-6xl font-extrabold leading-none tracking-[-0.04em] sm:text-8xl lg:text-[6.75rem] xl:text-[7.5rem]">
                 <span className="bg-gradient-to-r from-white via-[#d9d2ff] to-violet bg-clip-text text-transparent">{site.short}</span>
                 <span className="sr-only"> Patro, {site.role}</span>
               </h1>
@@ -109,6 +108,14 @@ export default function Home() {
               <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-muted">
                 <span className="inline-flex items-center gap-1.5"><MapPin size={15} aria-hidden /> Currently in {site.location}</span>
                 <Clock timezone={site.timezone} />
+              </div>
+
+              <div className="hero-art-mobile mt-12 lg:hidden">
+                <CoderScene className="mx-auto w-full max-w-[520px]" />
+                <div className="mx-auto -mt-6 w-fit max-w-full rounded-xl border border-line bg-night/80 px-4 py-3 backdrop-blur-md">
+                  <p className="eyebrow !text-[10px]">// right now</p>
+                  <p className="mt-1.5"><StatusTicker lines={statusLines} /></p>
+                </div>
               </div>
             </div>
           </div>
@@ -167,20 +174,6 @@ export default function Home() {
             </div>
           </div>
 
-          <ul className="reveal mt-14 grid grid-cols-2 gap-3 md:grid-cols-4">
-            {stats.map((s, i) => {
-              const Icon = statIcons[i] ?? Zap
-              return (
-                <li key={s.label} className="card flex items-center gap-4 p-5">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-violet/10 text-violet-soft"><Icon size={18} aria-hidden /></span>
-                  <span>
-                    <span className="block font-display text-2xl font-bold">{s.value}</span>
-                    <span className="text-xs text-muted">{s.label}</span>
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
         </Section>
 
         {/* ------------------------------------------------------------ Projects */}
@@ -232,6 +225,9 @@ export default function Home() {
                   <span className="font-mono text-xs text-muted">{education.period}</span>
                 </div>
                 <p className="mt-2 text-sm text-muted">{education.school}. {education.detail}</p>
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {certifications.map((c) => <li key={c} className="chip">{c}</li>)}
+                </ul>
               </div>
             </li>
           </ol>
@@ -239,26 +235,49 @@ export default function Home() {
 
         {/* ------------------------------------------------------------ Skills */}
         <Section id="skills">
-          <div className="reveal text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/10 px-3 py-1 text-xs text-violet-soft"><Zap size={13} aria-hidden /> 04. My toolbox</span>
-            <Heading lead="Skills that" accent="power the work." className="mt-5" />
-            <p className="mt-5 text-muted">The models, languages and tools I reach for.</p>
-          </div>
-          <div className="reveal mt-12">
-            <SkillsGrid skills={skills} />
+          <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
+            <div className="reveal flex flex-col justify-between gap-10 lg:pt-24">
+              <SkillOrbit icons={orbitIcons} />
+              <figure className="relative rounded-2xl border border-line bg-panel/70 p-6 pt-8">
+                <Quote size={30} className="absolute -top-4 left-5 fill-violet-soft text-violet-soft drop-shadow-[0_0_10px_rgba(124,92,255,0.8)]" aria-hidden />
+                <blockquote className="leading-relaxed text-ink">Models change every few months.<br />Good engineering habits don&apos;t.</blockquote>
+                <span className="mt-4 block h-0.5 w-8 rounded bg-violet" />
+              </figure>
+            </div>
+
+            <div className="reveal min-w-0">
+              <div className="text-center lg:text-left">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/10 px-3 py-1 text-xs font-medium text-violet-soft"><Zap size={13} fill="currentColor" aria-hidden /> My Toolbox</span>
+                <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
+                  Skills that power <span className="grad">intelligent products</span>
+                </h2>
+                <p className="mt-4 text-muted">The models, languages and tools I use to turn ideas into working AI.</p>
+              </div>
+              <div className="mt-8">
+                <SkillsGrid skills={skills} />
+              </div>
+            </div>
           </div>
 
-          <div className="reveal mt-12 grid gap-4 md:grid-cols-[1fr_2fr]">
-            <div className="card p-6">
-              <Quote size={22} className="text-violet-soft" aria-hidden />
-              <p className="mt-3 leading-relaxed">Models change every few months.<br />Good engineering habits don&apos;t.</p>
-            </div>
-            <div className="card p-6">
-              <p className="flex items-center gap-2 text-sm font-semibold"><Award size={16} className="text-violet-soft" aria-hidden /> Certifications</p>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {certifications.map((c) => <li key={c} className="chip">{c}</li>)}
-              </ul>
-            </div>
+          <div className="reveal mt-12 grid gap-4 lg:grid-cols-[1fr_280px]">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-5 rounded-2xl border border-line bg-panel/60 p-5 md:grid-cols-4">
+              {stats.map((s, i) => {
+                const Icon = statIcons[i] ?? Zap
+                return (
+                  <li key={s.label} className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet/10 text-violet-soft"><Icon size={17} aria-hidden /></span>
+                    <span>
+                      <span className="block font-display text-xl font-bold leading-none">{s.value}</span>
+                      <span className="mt-1 block text-xs text-muted">{s.label}</span>
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+            <a href="#projects" className="group flex items-center justify-between gap-4 rounded-2xl border border-violet/30 bg-panel/60 p-5 transition hover:border-violet/60 hover:shadow-glow">
+              <span className="font-hand text-[28px] leading-[1.05] text-violet-soft drop-shadow-[0_0_10px_rgba(124,92,255,0.6)]">Smarter<br />things ahead…</span>
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-line text-ink transition group-hover:translate-x-1 group-hover:border-violet/60"><ArrowRight size={18} aria-hidden /></span>
+            </a>
           </div>
         </Section>
 
