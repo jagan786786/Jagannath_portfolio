@@ -124,9 +124,9 @@ body {
 .orbit-ccw .orbit-counter { animation: orbit 60s linear infinite; }
 @keyframes orbit { to { transform: rotate(360deg); } }
 .hero-photo {
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 38%), linear-gradient(0deg, transparent 0%, #000 22%, #000 86%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%), linear-gradient(0deg, transparent 0%, #000 12%, #000 90%, transparent 100%);
   -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(90deg, transparent 0%, #000 38%), linear-gradient(0deg, transparent 0%, #000 22%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 30%), linear-gradient(0deg, transparent 0%, #000 12%, #000 90%, transparent 100%);
   mask-composite: intersect;
   filter: saturate(1.05) brightness(0.92);
 }
@@ -143,3 +143,15 @@ body {
 .think-tilt.is-thinking { transform: rotate(-7deg) translateY(4px); }
 .think-dot { animation: think-dot 1s ease-in-out infinite; }
 @keyframes think-dot { 0%, 100% { opacity: 0.35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
+
+.hero-stars {
+  background-image:
+    radial-gradient(1.2px 1.2px at 12% 18%, rgba(220,210,255,.7), transparent),
+    radial-gradient(1px 1px at 28% 72%, rgba(220,210,255,.5), transparent),
+    radial-gradient(1.4px 1.4px at 41% 36%, rgba(220,210,255,.6), transparent),
+    radial-gradient(1px 1px at 8% 58%, rgba(220,210,255,.45), transparent),
+    radial-gradient(1.2px 1.2px at 35% 12%, rgba(220,210,255,.55), transparent),
+    radial-gradient(1px 1px at 22% 44%, rgba(220,210,255,.5), transparent),
+    radial-gradient(1.6px 1.6px at 46% 84%, rgba(190,170,255,.6), transparent);
+  animation: twinkle 5s ease-in-out infinite;
+}

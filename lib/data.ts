@@ -26,7 +26,7 @@ export const site = {
 export const hero = {
   // Full-background hero picture (e.g. Jagannath at his desk at night, made from his photo).
   // Put the file in /public and set this to "/hero.webp". Leave empty to use the animated illustration.
-  image: "" as string,
+  image: "/hero.webp" as string,
   headline: ["I build AI that", "ships to production."],
   // VERIFY
   bio: "An AI engineer who turns large language models into working products: retrieval pipelines, tool-using agents, and the APIs and interfaces around them.",

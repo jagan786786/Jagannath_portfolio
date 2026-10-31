@@ -62,13 +62,32 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 28%, rgba(5,3,13,0.75) 40%, rgba(5,3,13,0) 56%)" }} />
 
           {hero.image ? (
-            /* Full-bleed hero picture, faded into the dark on the left */
-            <img
-              src={hero.image}
-              alt={`${site.name} coding at his desk at night`}
-              fetchPriority="high"
-              className="hero-photo pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[72%] object-cover object-center lg:block"
-            />
+            <>
+              {/* Full-bleed hero picture: him large on the right, dark wall under the text */}
+              <img
+                src={hero.image}
+                srcSet={`/hero-sm.webp 1024w, ${hero.image} 2048w`}
+                sizes="70vw"
+                alt={`${site.name} coding at his desk at night`}
+                fetchPriority="high"
+                className="hero-photo pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[72%] object-cover lg:block"
+                style={{ objectPosition: "90% 40%" }}
+              />
+              {/* drifting stars over the dark wall */}
+              <div className="hero-stars pointer-events-none absolute inset-0 hidden lg:block" />
+              {/* glass quote board on the wall, left of his head */}
+              <div className="pointer-events-none absolute left-[42%] top-[7%] z-10 hidden w-52 rotate-[-5deg] xl:block">
+                <div className="floaty rounded-2xl border border-violet-soft/40 bg-[#0c0826]/40 px-5 py-4 shadow-[0_0_36px_-8px_rgba(124,92,255,0.7),inset_0_0_20px_rgba(124,92,255,0.15)] backdrop-blur-[2px]">
+                  <p className="font-hand text-[24px] leading-[1.1] text-[#e6e0ff]/90">&ldquo;{hero.quote}&rdquo;</p>
+                  <p className="mt-2 text-right font-hand text-lg tracking-[0.2em] text-[#e6e0ff]/75">— {site.short.toUpperCase()}</p>
+                </div>
+              </div>
+              {/* "right now" card on his back, like a sticker on the jacket */}
+              <div className="absolute bottom-[14%] left-[46%] z-10 hidden w-64 rounded-xl border border-white/10 bg-[#0a0720]/80 p-4 backdrop-blur-md lg:block">
+                <p className="eyebrow !text-[10px]">// right now</p>
+                <p className="mt-2 min-h-[2.5rem] leading-snug"><StatusTicker lines={statusLines} /></p>
+              </div>
+            </>
           ) : (
             /* Full-bleed illustrated night scene */
             <NightScene className="pointer-events-none absolute inset-0 hidden lg:block" quote={hero.quote} author={site.short.toUpperCase()} status={statusLines} />
@@ -114,8 +133,18 @@ export default function Home() {
 
               <div className="mt-12 lg:hidden">
                 <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_0_60px_-20px_rgba(124,92,255,0.8)]">
-                  <NightScene crop className="aspect-[4/3] w-full" status={statusLines} />
+                  {hero.image ? (
+                    <img src="/hero-sm.webp" alt={`${site.name} coding at his desk at night`} className="aspect-[4/3] w-full object-cover" style={{ objectPosition: "62% 50%" }} />
+                  ) : (
+                    <NightScene crop className="aspect-[4/3] w-full" status={statusLines} />
+                  )}
                 </div>
+                {hero.image && (
+                  <div className="mx-auto -mt-6 w-fit max-w-[90%] rounded-xl border border-white/10 bg-[#0a0720]/85 px-4 py-3 backdrop-blur-md">
+                    <p className="eyebrow !text-[10px]">// right now</p>
+                    <p className="mt-1.5"><StatusTicker lines={statusLines} /></p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
