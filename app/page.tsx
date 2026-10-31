@@ -63,11 +63,28 @@ export default function Home() {
           <HeroCanvas />
           <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 30%, rgba(5,3,13,0.6) 44%, rgba(5,3,13,0) 60%)" }} />
 
-          {/* Illustrated Jagannath coding at his desk (desktop: full-bleed on the right) */}
-          <div className="hero-art pointer-events-none absolute inset-y-0 right-0 hidden w-[56%] items-center justify-center pt-16 lg:flex">
-            <CoderScene className="w-full max-w-[780px]" />
-          </div>
-          <div className="absolute right-[34%] top-[13%] z-10 hidden w-64 rounded-xl border border-line bg-night/75 p-4 backdrop-blur-md lg:block">
+          {hero.image ? (
+            <>
+              {/* Full-bleed hero photo/illustration, faded into the dark on the left */}
+              <img
+                src={hero.image}
+                alt={`${site.name} coding at his desk at night`}
+                fetchPriority="high"
+                className="hero-photo pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[72%] object-cover object-center lg:block"
+              />
+              <div className="pointer-events-none absolute right-[30%] top-[9%] z-10 hidden w-64 rotate-[-6deg] lg:block">
+                <div className="floaty rounded-2xl border border-violet/40 bg-night/40 p-5 shadow-glow backdrop-blur-sm">
+                  <p className="font-hand text-[28px] leading-tight text-ink/90">&ldquo;{hero.quote}&rdquo;</p>
+                  <p className="mt-2 text-right font-mono text-[11px] tracking-[0.3em] text-ink/70">— {site.short.toUpperCase()}</p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="hero-art pointer-events-none absolute inset-y-0 right-0 hidden w-[56%] items-center justify-center pt-16 lg:flex">
+              <CoderScene className="w-full max-w-[780px]" />
+            </div>
+          )}
+          <div className={`absolute z-10 hidden w-64 ${hero.image ? "right-[8%] top-[44%]" : "right-[34%] top-[13%]"} rounded-xl border border-line bg-night/75 p-4 backdrop-blur-md lg:block`}>
             <p className="eyebrow !text-[10px]">// right now</p>
             <p className="mt-2 min-h-[2.5rem] leading-snug"><StatusTicker lines={statusLines} /></p>
           </div>
