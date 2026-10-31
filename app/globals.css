@@ -2,59 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply bg-gray-900 text-white;
-  }
+:root {
+  --bg: 244 245 247;
+  --ink: 22 26 35;
+  --muted: 88 96 110;
+  --rule: 216 220 227;
+  --accent: 52 68 232;
+  --heat: 240 168 30;
+  --on-accent: 255 255 255;
+  color-scheme: light;
 }
 
-@layer components {
-  .gradient-text {
-    @apply bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent;
-  }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-gray-800;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-gradient-to-b from-blue-500 to-purple-500 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply from-blue-400 to-purple-400;
-}
-
-/* Loading animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 18 21 28;
+    --ink: 232 234 238;
+    --muted: 156 163 175;
+    --rule: 44 49 60;
+    --accent: 140 152 255;
+    --heat: 224 150 20;
+    --on-accent: 18 21 28;
+    color-scheme: dark;
   }
 }
 
-.animate-fadeInUp {
-  animation: fadeInUp 0.6s ease-out;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
-/* Smooth transitions for all interactive elements */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow,
-    transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+body {
+  @apply bg-bg font-sans text-ink antialiased;
 }
+
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Hero token stream */
+.token { transition: background-color 400ms ease; }
+.caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.12em;
+  background: rgb(var(--accent));
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }

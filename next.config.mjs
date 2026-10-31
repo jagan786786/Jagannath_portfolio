@@ -1,14 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
+  // Pure static site: Netlify serves the `out/` folder, no server needed.
+  output: "export",
+  images: { unoptimized: true },
+  trailingSlash: false,
 }
 
 export default nextConfig
