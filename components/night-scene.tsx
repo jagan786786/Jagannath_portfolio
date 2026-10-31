@@ -660,15 +660,15 @@ export default function NightScene({ className = "", crop = false, showPerson = 
 
           {/* ---------- glass quote board, hung on the wall left of the window ---------- */}
           {quote && (
-            <g transform="rotate(-4 805 0)">
+            <g transform="rotate(-4 805 145)">
               <g className="floaty">
-                <rect x="650" y="-78" width="312" height="150" rx="18" fill="#0c0826" fillOpacity="0.55" stroke="#c9bcff" strokeOpacity="0.7" strokeWidth="2" filter="url(#ns-glow)" />
-                <rect x="650" y="-78" width="312" height="150" rx="18" fill="none" stroke="#efeaff" strokeOpacity="0.35" strokeWidth="1" />
+                <rect x="650" y="62" width="312" height="150" rx="18" fill="#0c0826" fillOpacity="0.55" stroke="#c9bcff" strokeOpacity="0.7" strokeWidth="2" filter="url(#ns-glow)" />
+                <rect x="650" y="62" width="312" height="150" rx="18" fill="none" stroke="#efeaff" strokeOpacity="0.35" strokeWidth="1" />
                 <text fontFamily="Caveat, cursive" fill="#ece6ff" fontSize="38">
-                  <tspan x="676" y="-28">&ldquo;{quote.slice(0, quote.lastIndexOf(",") + 1)}</tspan>
-                  <tspan x="676" y="12">{quote.slice(quote.lastIndexOf(",") + 1).trim()}&rdquo;</tspan>
+                  <tspan x="676" y="112">&ldquo;{quote.slice(0, quote.lastIndexOf(",") + 1)}</tspan>
+                  <tspan x="676" y="152">{quote.slice(quote.lastIndexOf(",") + 1).trim()}&rdquo;</tspan>
                 </text>
-                <text x="936" y="52" textAnchor="end" fontFamily="Caveat, cursive" fontSize="24" letterSpacing="3" fill="#ece6ff" opacity="0.85">— {author}</text>
+                <text x="936" y="192" textAnchor="end" fontFamily="Caveat, cursive" fontSize="24" letterSpacing="3" fill="#ece6ff" opacity="0.85">— {author}</text>
               </g>
             </g>
           )}
