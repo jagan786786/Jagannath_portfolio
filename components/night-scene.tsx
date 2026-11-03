@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import StatusTicker from "@/components/status-ticker"
+import CodeEditor from "@/components/code-editor"
+import { useHumanTyping } from "@/lib/human-typing"
 
 /*
   Cinematic hero scene: Jagannath at his desk at night, seen from behind his
@@ -14,61 +16,6 @@ import StatusTicker from "@/components/status-ticker"
   faded out by the page.
 */
 
-type Snippet = { file: string; code: string; run: string; result: string }
-
-const SNIPPETS: Snippet[] = [
-  {
-    file: "agent.py",
-    code: `from agents import Agent, tool
-from rag import retrieve
-
-@tool
-def search_docs(query: str):
-    """Find passages that answer it."""
-    return retrieve(query, k=6)
-
-agent = Agent(model="gemini-flash",
-              tools=[search_docs])
-
-answer = agent.run("Why did the build fail?")
-print(answer.cited())`,
-    run: "$ python agent.py",
-    result: "✓ grounded answer · 3 sources",
-  },
-  {
-    file: "evals.py",
-    code: `import pytest
-from agent import agent
-
-CASES = load("evals/questions.jsonl")
-
-@pytest.mark.parametrize("case", CASES)
-def test_answer_is_grounded(case):
-    out = agent.run(case.question)
-    assert out.sources, "no citations"
-    assert judge(out, case.expected) > 0.8`,
-    run: "$ pytest evals/ -q",
-    result: "✓ 24 passed in 3.1s",
-  },
-]
-
-const C = { kw: "#c4b5fd", str: "#86efac", fn: "#67e8f9", dec: "#f9a8d4", num: "#fcd34d", com: "#6b6890", txt: "#dcd8f0" }
-
-type Seg = [string, string]
-function highlight(line: string): Seg[] {
-  const re = /("""[^"]*"""|"[^"]*"|'[^']*')|(#.*$)|(@[\w.]+)|\b(from|import|def|return|for|in|assert|print|await|async)\b|(\b\w+(?=\())|(\b\d+(?:\.\d+)?\b)/g
-  const out: Seg[] = []
-  let last = 0
-  let m: RegExpExecArray | null
-  while ((m = re.exec(line))) {
-    if (m.index > last) out.push([line.slice(last, m.index), C.txt])
-    out.push([m[0], m[1] ? C.str : m[2] ? C.com : m[3] ? C.dec : m[4] ? C.kw : m[5] ? C.fn : C.num])
-    last = m.index + m[0].length
-  }
-  if (last < line.length) out.push([line.slice(last), C.txt])
-  return out
-}
-
 // Small seeded RNG so the city and Earth lights are identical on server and client.
 function rng(seed: number) {
   return () => {
@@ -77,98 +24,10 @@ function rng(seed: number) {
   }
 }
 
-export function useTyping(visible: React.MutableRefObject<boolean>) {
-  const [si, setSi] = useState(0)
-  const [typed, setTyped] = useState(0)
-  const [phase, setPhase] = useState<"typing" | "running" | "done">("typing")
-  const [thinking, setThinking] = useState(false)
-  const snip = SNIPPETS[si]
-  const total = snip.code.length
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setTyped(total); setPhase("done"); return }
-    if (phase === "typing") {
-      // He stops to think at each blank line (between blocks of code), hand on chin.
-      const pauses = new Set<number>()
-      for (let i = 1; i < snip.code.length; i++) if (snip.code[i] === "\n" && snip.code[i - 1] === "\n") pauses.add(i)
-      let t = 0
-      let held = false
-      let timer: ReturnType<typeof setTimeout> | undefined
-      const id = setInterval(() => {
-        if (!visible.current || held) return
-        let next = snip.code[t] === " " ? t + 3 : t + 1 + (Math.random() > 0.8 ? 1 : 0)
-        const stop = [...pauses].find((p) => p > t && p <= next)
-        if (stop !== undefined) {
-          next = stop
-          pauses.delete(stop)
-          held = true
-          setThinking(true)
-          timer = setTimeout(() => { held = false; setThinking(false) }, 2600)
-        }
-        if (next >= total) { clearInterval(id); setTyped(total); setPhase("running"); return }
-        t = next
-        setTyped(next)
-      }, 34)
-      return () => { clearInterval(id); if (timer) clearTimeout(timer); setThinking(false) }
-    }
-    if (phase === "running") { const t = setTimeout(() => setPhase("done"), 1400); return () => clearTimeout(t) }
-    const t = setTimeout(() => { setSi((i) => (i + 1) % SNIPPETS.length); setTyped(0); setPhase("typing") }, 3200)
-    return () => clearTimeout(t)
-  }, [phase, snip, total, visible])
-
-  return { snip, typed, phase, si, thinking }
-}
-
-/* Editor drawn in its own 300 x 198 space, placed on the monitor with a nested <svg>. */
-export function Editor({ snip, typed, phase, si, thinking }: ReturnType<typeof useTyping>) {
-  const FS = 7.4, CW = FS * 0.6, LH = 11.6, X = 68, Y = 32
-  const lines = useMemo(() => snip.code.split("\n"), [snip])
-  let start = 0
-  let cur = 0
-  const shown = lines.map((l, i) => {
-    if (typed >= start) cur = i
-    const take = Math.max(0, Math.min(l.length, typed - start))
-    start += l.length + 1
-    return l.slice(0, take)
-  })
-  const offset = Math.max(0, cur - 10) * LH
-  return (
-    <>
-      <rect width="300" height="198" fill="#0a0919" />
-      <rect width="300" height="12" fill="#14112e" />
-      <circle cx="8" cy="6" r="2" fill="#ff5f57" /><circle cx="15" cy="6" r="2" fill="#febc2e" /><circle cx="22" cy="6" r="2" fill="#28c840" />
-      <rect x="38" y="1" width="52" height="11" fill="#0a0919" />
-      <text x="44" y="9" fontFamily="JetBrains Mono, monospace" fontSize="6" fill="#c4b5fd">{snip.file}</text>
-      <rect y="12" width="46" height="186" fill="#0f0d24" />
-      {["src/", "agent.py", "rag.py", "tools.py", "evals.py", "evals/", "README.md"].map((f, i) => (
-        <text key={f} x={f.endsWith("/") ? 5 : 10} y={24 + i * 10} fontFamily="JetBrains Mono, monospace" fontSize="5.4" fill={f === snip.file ? "#e9e4ff" : "#625d8c"}>{f}</text>
-      ))}
-      <clipPath id="ed-clip"><rect x="46" y="14" width="254" height="156" /></clipPath>
-      <g clipPath="url(#ed-clip)">
-        <g transform={`translate(0 ${-offset})`} fontFamily="JetBrains Mono, monospace" fontSize={FS}>
-          {shown.map((l, i) => i > cur ? null : (
-            <g key={`${si}-${i}`}>
-              <text x={X - 8} y={Y + i * LH} fill="#3f3a6b" textAnchor="end" fontSize="6">{i + 1}</text>
-              <text x={X} y={Y + i * LH} xmlSpace="preserve">{highlight(l).map(([t, c], k) => <tspan key={k} fill={c}>{t}</tspan>)}</text>
-            </g>
-          ))}
-          {phase === "typing" && <rect x={X + shown[cur].length * CW + 0.5} y={Y + cur * LH - FS + 1} width="1.2" height={FS + 1} fill="#e9e4ff" className={thinking ? "caret" : undefined} />}
-        </g>
-      </g>
-      <rect x="46" y="172" width="254" height="26" fill="#07061a" />
-      <line x1="46" y1="172" x2="300" y2="172" stroke="#1f1b45" strokeWidth="0.6" />
-      <text x="52" y="182" fontFamily="JetBrains Mono, monospace" fontSize="6" fill="#8f89c0">{phase === "typing" ? "$ _" : snip.run}</text>
-      {phase !== "typing" && (
-        <text x="52" y="193" fontFamily="JetBrains Mono, monospace" fontSize="6.4" fill={phase === "done" ? "#34d399" : "#fcd34d"}>{phase === "done" ? snip.result : "running…"}</text>
-      )}
-    </>
-  )
-}
-
 export default function NightScene({ className = "", crop = false, showPerson = false, quote, author, status = [] }: { className?: string; crop?: boolean; showPerson?: boolean; quote?: string; author?: string; status?: string[] }) {
   const wrap = useRef<HTMLDivElement>(null)
   const visible = useRef(true)
-  const typing = useTyping(visible)
+  const typing = useHumanTyping(visible)
 
   useEffect(() => {
     const io = new IntersectionObserver(([e]) => { visible.current = e.isIntersecting })
@@ -441,7 +300,7 @@ export default function NightScene({ className = "", crop = false, showPerson = 
         <rect x="701.5" y="248.5" width="359" height="251" rx="8.5" fill="none" stroke="#8e88b0" strokeOpacity="0.45" />
         {/* screen */}
         <svg x="711" y="256" width="340" height="224" viewBox="0 0 300 198" preserveAspectRatio="none">
-          <Editor {...typing} />
+          <CodeEditor s={typing} />
         </svg>
         <rect x="711" y="256" width="340" height="224" fill="url(#ns-glass)" />
         <rect x="711" y="256" width="340" height="224" fill="none" stroke="#000" strokeOpacity="0.6" strokeWidth="2" />

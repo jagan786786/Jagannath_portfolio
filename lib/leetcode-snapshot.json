@@ -1,0 +1,149 @@
+{
+ "username": "jagannathpatro234",
+ "ranking": 635815,
+ "solved": {
+  "all": 259,
+  "easy": 103,
+  "medium": 144,
+  "hard": 12
+ },
+ "total": {
+  "all": 4100,
+  "easy": 975,
+  "medium": 2138,
+  "hard": 987
+ },
+ "languages": [
+  {
+   "name": "Java",
+   "solved": 224
+  },
+  {
+   "name": "Python",
+   "solved": 28
+  },
+  {
+   "name": "MySQL",
+   "solved": 16
+  },
+  {
+   "name": "JavaScript",
+   "solved": 5
+  }
+ ],
+ "topics": [
+  {
+   "name": "Array",
+   "solved": 139
+  },
+  {
+   "name": "String",
+   "solved": 75
+  },
+  {
+   "name": "Hash Table",
+   "solved": 46
+  },
+  {
+   "name": "Two Pointers",
+   "solved": 38
+  },
+  {
+   "name": "Dynamic Programming",
+   "solved": 37
+  },
+  {
+   "name": "Math",
+   "solved": 35
+  },
+  {
+   "name": "Matrix",
+   "solved": 34
+  },
+  {
+   "name": "Greedy",
+   "solved": 29
+  },
+  {
+   "name": "Sorting",
+   "solved": 25
+  },
+  {
+   "name": "Stack",
+   "solved": 19
+  }
+ ],
+ "badges": [
+  "50 Days Badge 2024"
+ ],
+ "streak": 8,
+ "activeDays": 30,
+ "submissionsYear": 98,
+ "calendar": {
+  "1768348800": 1,
+  "1771804800": 4,
+  "1771891200": 4,
+  "1771977600": 2,
+  "1772755200": 1,
+  "1772841600": 3,
+  "1773014400": 2,
+  "1773705600": 2,
+  "1773878400": 6,
+  "1773964800": 9,
+  "1774051200": 2,
+  "1774137600": 1,
+  "1774224000": 1,
+  "1774310400": 2,
+  "1774396800": 4,
+  "1774483200": 8,
+  "1774828800": 5,
+  "1774915200": 3,
+  "1775779200": 6,
+  "1776038400": 3,
+  "1783382400": 2,
+  "1783468800": 3,
+  "1787616000": 1,
+  "1787702400": 2,
+  "1787788800": 1,
+  "1787875200": 3,
+  "1788048000": 1,
+  "1793491200": 3,
+  "1793577600": 6,
+  "1793664000": 7
+ },
+ "recent": [
+  {
+   "title": "Remove Nth Node From End of List",
+   "slug": "remove-nth-node-from-end-of-list",
+   "timestamp": 1793719272
+  },
+  {
+   "title": "Minimum Moves to Equal Array Elements III",
+   "slug": "minimum-moves-to-equal-array-elements-iii",
+   "timestamp": 1793715981
+  },
+  {
+   "title": "Add Two Numbers",
+   "slug": "add-two-numbers",
+   "timestamp": 1793630931
+  },
+  {
+   "title": "Minimum Moves to Equal Array Elements II",
+   "slug": "minimum-moves-to-equal-array-elements-ii",
+   "timestamp": 1793626051
+  },
+  {
+   "title": "Left and Right Sum Differences",
+   "slug": "left-and-right-sum-differences",
+   "timestamp": 1793554550
+  },
+  {
+   "title": "Minimum Moves to Equal Array Elements",
+   "slug": "minimum-moves-to-equal-array-elements",
+   "timestamp": 1793544085
+  }
+ ],
+ "contest": null,
+ "fetchedAt": 1793726530091,
+ "live": false
+}

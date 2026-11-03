@@ -8,6 +8,7 @@ import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
 import SkillOrbit from "@/components/skill-orbit"
 import ContactForm from "@/components/contact-form"
+import { brandIcons } from "@/lib/brand-icons"
 import NightScene from "@/components/night-scene"
 import HeroPhoto from "@/components/hero-photo"
 import StatusTicker from "@/components/status-ticker"
@@ -15,6 +16,10 @@ import Assistant, { type QA } from "@/components/assistant"
 import { site, hero, statusLines, about, projects, experience, skills, orbitIcons, stats, education, certifications } from "@/lib/data"
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const
+
+function LeetCodeIcon({ size = 18 }: { size?: number; className?: string; "aria-hidden"?: boolean }) {
+  return <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden><path d={brandIcons.leetcode.path} fill="currentColor" /></svg>
+}
 
 function Heading({ lead, accent, className = "" }: { lead: string; accent: string; className?: string }) {
   return (
@@ -121,6 +126,9 @@ export default function Home() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <a href={site.github} {...ext} aria-label="GitHub" className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-violet/50 hover:text-white"><Github size={18} /></a>
                 <a href={site.linkedin} {...ext} aria-label="LinkedIn" className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-violet/50 hover:text-white"><Linkedin size={18} /></a>
+                <a href={site.leetcode} {...ext} aria-label="LeetCode" className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-[#FFA116]/60 hover:text-white">
+                  <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden><path d={brandIcons.leetcode.path} fill="currentColor" /></svg>
+                </a>
                 {site.openToWork && (
                   <span className="inline-flex items-center gap-2 rounded-full border border-mint/20 bg-mint/10 px-3 py-1.5 text-xs text-mint">
                     <span className="pulse-dot h-2 w-2 rounded-full bg-mint" /> Open to opportunities
@@ -326,6 +334,7 @@ export default function Home() {
                   { icon: Mail, label: "Email", value: site.email, href: `mailto:${site.email}` },
                   { icon: Github, label: "GitHub", value: "jagan786786", href: site.github },
                   { icon: Linkedin, label: "LinkedIn", value: "Jagannath Patro", href: site.linkedin },
+                  { icon: LeetCodeIcon, label: "LeetCode", value: "jagannathpatro234", href: site.leetcode },
                   { icon: MapPin, label: "Location", value: site.location },
                 ].map(({ icon: Icon, label, value, href }) => {
                   const inner = (
@@ -391,6 +400,7 @@ export default function Home() {
             <ul className="mt-3 space-y-2 text-sm text-muted">
               <li><a href={site.github} {...ext} className="inline-flex items-center gap-1 hover:text-ink">GitHub <ArrowUpRight size={13} aria-hidden /></a></li>
               <li><a href={site.linkedin} {...ext} className="inline-flex items-center gap-1 hover:text-ink">LinkedIn <ArrowUpRight size={13} aria-hidden /></a></li>
+              <li><a href={site.leetcode} {...ext} className="inline-flex items-center gap-1 hover:text-ink">LeetCode <ArrowUpRight size={13} aria-hidden /></a></li>
             </ul>
           </div>
           <div>

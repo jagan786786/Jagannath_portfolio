@@ -181,3 +181,9 @@ body {
 .pose-think { transition: transform 0.7s cubic-bezier(.4,0,.2,1); transform: rotate(-1.6deg) translateY(-1.2px); }
 .pose-rest { transition: transform 0.7s cubic-bezier(.4,0,.2,1); transform: none; }
 @media (prefers-reduced-motion: reduce) { .tap-a, .tap-b, .pose-nod { animation: none; } }
+
+/* ---------- per-keystroke figure motion ---------- */
+.hand { transition: transform 70ms ease-out; }
+.hand.hand-down { transform: translate(0.4px, 2.1px) scaleY(0.975); transition-duration: 35ms; }
+.hand.hand-lift { transform: translate(0, -0.8px); transition: transform 600ms ease; }
+.pose-glance { transition: transform 260ms ease-out; transform: rotate(0.9deg) translateY(0.9px); }

@@ -17,6 +17,7 @@ export const site = {
   email: "jagannathpatro234@gmail.com",
   github: "https://github.com/jagan786786",
   linkedin: "https://www.linkedin.com/in/jagannath-patro-37a192250/",
+  leetcode: "https://leetcode.com/u/jagannathpatro234/",
   // Drop a PDF into /public and set this to "/resume.pdf" to show the Download Résumé button.
   resume: "" as string,
   formspree: "https://formspree.io/f/mqabbkgr",

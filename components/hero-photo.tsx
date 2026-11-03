@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import { Editor, useTyping } from "@/components/night-scene"
+import CodeEditor from "@/components/code-editor"
+import { useHumanTyping } from "@/lib/human-typing"
 
 /*
   Brings the hero photo to life. Every overlay is placed in the photo's own
@@ -79,7 +80,17 @@ export default function HeroPhoto({
   const box = useRef<HTMLDivElement>(null)
   const visible = useRef(true)
   const [geo, setGeo] = useState<{ s: number; x: number; y: number } | null>(null)
-  const typing = useTyping(visible)
+  const typing = useHumanTyping(visible)
+  // which hand is down right now: each keystroke presses one hand for ~80 ms
+  const [down, setDown] = useState<{ L: boolean; R: boolean; enter: boolean }>({ L: false, R: false, enter: false })
+  useEffect(() => {
+    const k = typing.key
+    if (!k) return
+    setDown((d) => ({ ...d, [k.hand]: true, enter: k.kind === "enter" ? true : d.enter }))
+    const up = setTimeout(() => setDown((d) => ({ ...d, [k.hand]: false })), k.kind === "back" ? 60 : 85)
+    const look = k.kind === "enter" ? setTimeout(() => setDown((d) => ({ ...d, enter: false })), 420) : undefined
+    return () => { clearTimeout(up); if (look) clearTimeout(look) }
+  }, [typing.key])
   const [idea, setIdea] = useState(0)
 
   // Fit the photo like object-fit: cover, and keep the overlay layer in step.
@@ -117,7 +128,8 @@ export default function HeroPhoto({
     return Array.from({ length: 26 }, () => ({ x: 650 + r() * 370, y: 150 + r() * 160, d: r() * 4, s: 0.8 + r() * 1.4 }))
   }, [])
 
-  const coding = !typing.thinking && typing.phase === "typing"
+  // "coding" = keys are actually going; short pauses between lines are not coding
+  const coding = !typing.idle && (typing.phase === "edit" || typing.phase === "term")
   // largest candidate in srcSet (works for data: URLs too, which contain commas)
   const bgSrc = (srcSet && srcSet.trim().match(/(\S+)\s+\d+w\s*$/)?.[1]) || src
 
@@ -167,10 +179,11 @@ export default function HeroPhoto({
             />
           ))}
 
-          {/* ---- he moves: head nods while typing, tilts back while thinking; hands tap ---- */}
-          {piece(452, 96, 168, 214, typing.thinking ? "pose-think" : coding ? "pose-nod" : "pose-rest", "70% 92%")}
-          {piece(592, 376, 62, 46, coding ? "tap-a" : "", "50% 100%")}
-          {piece(668, 392, 64, 52, coding ? "tap-b" : "", "50% 100%")}
+          {/* ---- he moves with the keys: each hand presses on its own keystrokes,
+                the head dips to the new line on Enter, tilts back when thinking ---- */}
+          {piece(452, 96, 168, 214, typing.thinking ? "pose-think" : down.enter ? "pose-glance" : "pose-rest", "70% 92%")}
+          {piece(592, 376, 62, 46, `hand ${down.L ? "hand-down" : ""} ${typing.thinking ? "hand-lift" : ""}`, "50% 100%")}
+          {piece(668, 392, 64, 52, `hand ${down.R ? "hand-down" : ""} ${typing.thinking ? "hand-lift" : ""}`, "50% 100%")}
 
           {/* screen light on his face: flickers while he types, steadies while he thinks */}
           <div
@@ -181,7 +194,7 @@ export default function HeroPhoto({
           {/* live code on the monitor, projected onto the screen at its real angle */}
           <div className="absolute left-0 top-0" style={{ width: 300, height: 198, transformOrigin: "0 0", transform: screenM }}>
             <svg viewBox="0 0 300 198" width="300" height="198" className="block" style={{ opacity: 0.94 }}>
-              <Editor {...typing} />
+              <CodeEditor s={typing} />
             </svg>
             {/* screen glare so it reads as glass */}
             <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0) 40%)" }} />
@@ -193,11 +206,10 @@ export default function HeroPhoto({
           <span className="pulse-dot absolute h-[4px] w-[4px] rounded-full bg-mint" style={{ left: 648, top: 299 }} />
           <div className="laptop-scan absolute" style={{ left: 575, top: 292, width: 82, height: 54 }} />
 
-          {/* keyboard RGB glow: quick pulses while typing */}
-          <div
-            className={`absolute rounded-full mix-blend-screen ${coding ? "kbd-type" : "kbd-idle"}`}
-            style={{ left: 600, top: 410, width: 160, height: 46, background: "radial-gradient(closest-side, rgba(150,110,255,0.75), rgba(150,110,255,0))" }}
-          />
+          {/* keyboard RGB glow: soft base, and a flash under whichever half gets the key */}
+          <div className="kbd-idle absolute rounded-full mix-blend-screen" style={{ left: 600, top: 410, width: 160, height: 46, background: "radial-gradient(closest-side, rgba(150,110,255,0.75), rgba(150,110,255,0))" }} />
+          <div className="absolute rounded-full mix-blend-screen transition-opacity duration-75" style={{ left: 596, top: 396, width: 80, height: 36, opacity: down.L ? 0.9 : 0, background: "radial-gradient(closest-side, rgba(180,150,255,0.85), rgba(180,150,255,0))" }} />
+          <div className="absolute rounded-full mix-blend-screen transition-opacity duration-75" style={{ left: 668, top: 404, width: 84, height: 38, opacity: down.R ? 0.9 : 0, background: "radial-gradient(closest-side, rgba(180,150,255,0.85), rgba(180,150,255,0))" }} />
 
           {/* thinking: a glass bubble with the idea he is weighing */}
           <div className={`absolute transition-all duration-500 ${typing.thinking ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`} style={{ left: 612, top: 84 }}>
