@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ArrowRight, ArrowUpRight, Brain, Building2, ChevronDown, Globe, LayoutGrid, Star, Wrench, Github } from "lucide-react"
+import { ArrowRight, ArrowUpRight, Brain, Building2, ChevronDown, Globe, LayoutGrid, Star, Wrench, Github, X } from "lucide-react"
 import type { Category, Project } from "@/lib/data"
 
 const icons: Record<Category | "All", typeof Brain> = { All: LayoutGrid, Company: Building2, "AI / ML": Brain, "Web Apps": Globe, Tools: Wrench }
@@ -24,9 +24,9 @@ function Preview({ p }: { p: Project }) {
         <div className="mb-3 flex gap-1.5">
           <span className="h-2 w-2 rounded-full bg-[#ff5f57]" /><span className="h-2 w-2 rounded-full bg-[#febc2e]" /><span className="h-2 w-2 rounded-full bg-[#28c840]" />
         </div>
-        <div className="flex items-center gap-2.5">
-          <Icon size={20} className="text-violet-soft" aria-hidden />
-          <span className="font-display text-lg font-bold text-white">{p.title}</span>
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Icon size={20} className="shrink-0 text-violet-soft" aria-hidden />
+          <span className="truncate font-display text-lg font-bold text-white">{p.title}</span>
         </div>
         <div className="mt-3 space-y-1.5">
           <div className="h-1.5 w-4/5 rounded bg-white/10" />
@@ -73,7 +73,7 @@ export default function ProjectsGrid({ projects }: { projects: Project[] }) {
         })}
       </div>
 
-      <ul className="grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((p) => <Card key={p.title} p={p} />)}
       </ul>
     </>
@@ -83,29 +83,25 @@ export default function ProjectsGrid({ projects }: { projects: Project[] }) {
 function Card({ p }: { p: Project }) {
   const [open, setOpen] = useState(false)
   const href = p.demo || p.code
+  const shownTags = p.tags.slice(0, 3)
+  const moreTags = p.tags.length - shownTags.length
   return (
-    <li className="card group flex flex-col overflow-hidden transition hover:-translate-y-1 hover:border-violet/40 hover:shadow-glow">
+    <li className="card group relative flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:border-violet/40 hover:shadow-glow">
       <Preview p={p} />
       <div className="flex flex-1 flex-col p-6">
-        <ul className="flex flex-wrap gap-2">
-          {p.tags.map((t) => <li key={t} className="chip">{t}</li>)}
+        {/* one row of tags on every card */}
+        <ul className="flex flex-nowrap gap-2 overflow-hidden" aria-label="Tech stack">
+          {shownTags.map((t) => <li key={t} className="chip shrink-0 whitespace-nowrap">{t}</li>)}
+          {moreTags > 0 && <li className="chip shrink-0" title={p.tags.slice(3).join(", ")}>+{moreTags}</li>}
         </ul>
-        <h3 className="mt-4 font-display text-xl font-bold">{p.title}</h3>
-        {p.company && <p className="mt-1 text-xs text-violet-soft">{p.role ? `${p.role} · ` : ""}Built at {p.company}</p>}
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{p.summary}</p>
+        <h3 className="mt-4 truncate font-display text-xl font-bold" title={p.title}>{p.title}</h3>
+        <p className="mt-1 truncate text-xs text-violet-soft">{p.company ? `${p.role ? `${p.role} · ` : ""}Built at ${p.company}` : "Personal project"}</p>
+        <p className="mt-2 line-clamp-3 min-h-[4.25rem] text-sm leading-relaxed text-muted">{p.summary}</p>
 
-        {p.highlights && open && (
-          <ul id={`hl-${p.title}`} className="pop-in mt-4 space-y-2 border-t border-line pt-4 text-sm text-ink/90">
-            {p.highlights.map((h) => (
-              <li key={h} className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-violet-soft" />{h}</li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-6 flex items-center justify-between">
+        <div className="mt-auto flex items-center justify-between pt-6">
           {p.highlights ? (
-            <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls={`hl-${p.title}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
-              {open ? "Show less" : "What I built"} <ChevronDown size={15} className={`transition ${open ? "rotate-180" : ""}`} aria-hidden />
+            <button type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls={`hl-${p.title}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
+              What I built <ChevronDown size={15} aria-hidden />
             </button>
           ) : href ? (
             <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
@@ -119,6 +115,29 @@ function Card({ p }: { p: Project }) {
           )}
         </div>
       </div>
+
+      {/* "What I built" opens over the card, so the card never changes size */}
+      {p.highlights && open && (
+        <div id={`hl-${p.title}`} role="region" aria-label={`What I built on ${p.title}`} className="pop-in absolute inset-0 z-10 flex flex-col bg-[#0b0919]/[0.97] p-6 backdrop-blur">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate font-display text-lg font-bold">{p.title}</p>
+              <p className="mt-0.5 truncate text-xs text-violet-soft">{p.role ? `${p.role} · ` : ""}Built at {p.company}</p>
+            </div>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-muted hover:border-violet/50 hover:text-white">
+              <X size={15} />
+            </button>
+          </div>
+          <ul className="mt-4 flex-1 space-y-2.5 overflow-y-auto overscroll-contain pr-1 text-sm leading-relaxed text-ink/90">
+            {p.highlights.map((h) => (
+              <li key={h} className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-violet-soft" />{h}</li>
+            ))}
+          </ul>
+          <ul className="mt-4 flex flex-wrap gap-1.5 border-t border-line pt-4">
+            {p.tags.map((t) => <li key={t} className="chip !px-2.5 !py-0.5 text-[11px]">{t}</li>)}
+          </ul>
+        </div>
+      )}
     </li>
   )
 }

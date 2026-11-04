@@ -153,7 +153,7 @@ export const projects: Project[] = [
     company: "Bilvantis",
     role: "LLM proxy & monitoring",
     tags: ["Node.js", "Koa.js", "Redis", "MongoDB", "AWS EC2"],
-    summary: "A production LLM API proxy that unifies access, token tracking and cost control across OpenAI, Gemini, Anthropic and Databricks.",
+    summary: "A production LLM proxy with one gateway, token tracking and cost control for OpenAI, Gemini, Claude and Databricks.",
     highlights: [
       "Cut token consumption by 60% with Redis caching, rate limiting and usage-driven optimisation",
       "Role-based quotas and subscription plans with automated monitoring, removing 90% of manual tracking",
