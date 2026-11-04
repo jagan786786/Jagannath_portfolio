@@ -73,7 +73,7 @@ export default function ProjectsGrid({ projects }: { projects: Project[] }) {
         })}
       </div>
 
-      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((p) => <Card key={p.title} p={p} />)}
       </ul>
     </>
