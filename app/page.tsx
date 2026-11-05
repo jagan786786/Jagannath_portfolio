@@ -6,6 +6,7 @@ import Typed from "@/components/typed"
 import Reveal from "@/components/reveal"
 import SmoothScroll from "@/components/smooth-scroll"
 import HeroScroll from "@/components/hero-scroll"
+import TimelineFill from "@/components/timeline-fill"
 import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
 import SkillOrbit from "@/components/skill-orbit"
@@ -242,9 +243,10 @@ export default function Home() {
           </div>
 
           <ol className="relative mt-14 space-y-6 border-l border-line pl-8 md:ml-4">
+            <TimelineFill />
             {experience.map((job, i) => (
               <li key={job.company + job.role} className="reveal relative">
-                <span className={`absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night ${i === 0 ? "bg-violet shadow-glow" : "bg-[#2a2450]"}`} />
+                <span data-dot className="timeline-dot absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night" />
                 <div className="card p-6">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <h3 className="font-display text-xl font-bold">
@@ -261,7 +263,7 @@ export default function Home() {
               </li>
             ))}
             <li className="reveal relative">
-              <span className="absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night bg-[#2a2450]" />
+              <span data-dot className="timeline-dot absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night" />
               <div className="card p-6">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="font-display text-xl font-bold">{education.degree}</h3>
