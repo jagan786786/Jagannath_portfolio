@@ -5,6 +5,7 @@ import Clock from "@/components/clock"
 import Typed from "@/components/typed"
 import Reveal from "@/components/reveal"
 import SmoothScroll from "@/components/smooth-scroll"
+import HeroScroll from "@/components/hero-scroll"
 import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
 import SkillOrbit from "@/components/skill-orbit"
@@ -60,13 +61,14 @@ export default function Home() {
   return (
     <>
       <SmoothScroll />
+      <HeroScroll />
       <Reveal />
       <Assistant name={site.short} avatar="/profile.webp" greeting={`Hi! I'm ${site.short}'s AI twin. Ask me about his work, experience or stack.`} qa={qa} />
       <Nav name={site.short} initials={site.initials} linkedin={site.linkedin} />
 
       <main>
         {/* ------------------------------------------------------------ Hero */}
-        <section id="home" className="relative flex min-h-[100svh] items-center overflow-hidden pt-16">
+        <section id="home" className="hero-fade relative flex min-h-[100svh] items-center overflow-hidden pt-16">
           <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 28%, rgba(5,3,13,0.75) 40%, rgba(5,3,13,0) 56%)" }} />
 
           {hero.image ? (
@@ -102,7 +104,7 @@ export default function Home() {
             <NightScene className="pointer-events-none absolute inset-0 hidden lg:block" quote={hero.quote} author={site.short.toUpperCase()} status={statusLines} />
           )}
 
-          <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-20">
+          <div data-hero-copy className="relative z-10 mx-auto w-full max-w-6xl px-5 py-20 will-change-transform">
             <div className="max-w-2xl">
               <p className="eyebrow"><Typed text="// Hello, I'm" /></p>
               <h1 className="mt-4 font-display text-6xl font-extrabold leading-none tracking-[-0.04em] sm:text-8xl lg:text-[6.25rem] xl:text-[6.75rem]">
