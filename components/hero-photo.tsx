@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import CodeEditor from "@/components/code-editor"
 import { useHumanTyping } from "@/lib/human-typing"
+import { IH, IW, PhotoWarp, POINTS, type Fit } from "@/lib/photo-warp"
 
 /*
   Brings the hero photo to life. Every overlay is placed in the photo's own
@@ -11,8 +12,6 @@ import { useHumanTyping } from "@/lib/human-typing"
   keyboard, and so on, at any screen size.
 */
 
-const IW = 1024
-const IH = 572
 
 // Monitor screen corners in the photo: top-left, top-right, bottom-right, bottom-left.
 const SCREEN: [number, number][] = [[668, 215], [834, 221], [830, 352], [665, 334]]
@@ -79,7 +78,13 @@ export default function HeroPhoto({
 }) {
   const box = useRef<HTMLDivElement>(null)
   const visible = useRef(true)
-  const [geo, setGeo] = useState<{ s: number; x: number; y: number } | null>(null)
+  const [geo, setGeo] = useState<Fit | null>(null)
+  const canvas = useRef<HTMLCanvasElement>(null)
+  const warp = useRef<PhotoWarp | null>(null)
+  const [warpOn, setWarpOn] = useState(false)
+  // per-frame motion values, written by the animator and read by the renderer
+  const offs = useRef(new Float32Array(POINTS.length * 2))
+  const headPose = useRef({ a: 0, x: 0, y: 0 })
   const typing = useHumanTyping(visible)
   // which hand is down right now: each keystroke presses one hand for ~80 ms
   const [down, setDown] = useState<{ L: boolean; R: boolean; enter: boolean }>({ L: false, R: false, enter: false })
@@ -101,7 +106,7 @@ export default function HeroPhoto({
       const cw = el.clientWidth, ch = el.clientHeight
       if (!cw || !ch) return
       const s = Math.max(cw / IW, ch / IH)
-      setGeo({ s, x: (cw - IW * s) * posX, y: (ch - IH * s) * posY })
+      setGeo({ s, x: (cw - IW * s) * posX, y: (ch - IH * s) * posY, w: cw, h: ch })
     }
     fit()
     const ro = new ResizeObserver(fit)
@@ -114,6 +119,24 @@ export default function HeroPhoto({
     if (box.current) io.observe(box.current)
     return () => io.disconnect()
   }, [])
+
+  // GPU renderer for the photo (falls back to the plain <img> without WebGL)
+  useEffect(() => {
+    if (!canvas.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const largest = (srcSet && srcSet.trim().match(/(\S+)\s+\d+w\s*$/)?.[1]) || src
+    warp.current = PhotoWarp.create(canvas.current, largest, () => setWarpOn(true))
+  }, [src, srcSet])
+  useEffect(() => { if (geo && warp.current) warp.current.resize(geo) }, [geo, warpOn])
+  useEffect(() => {
+    if (!warpOn || !geo) return
+    let raf = 0
+    const loop = () => {
+      if (visible.current) warp.current?.draw(geo, offs.current, headPose.current)
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [warpOn, geo])
 
   // New idea each time he stops to think.
   const wasThinking = useRef(false)
@@ -162,6 +185,8 @@ export default function HeroPhoto({
         className="absolute max-w-none select-none"
         style={geo ? { left: geo.x, top: geo.y, width: IW * geo.s, height: IH * geo.s } : { inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: `${posX * 100}% ${posY * 100}%` }}
       />
+      {/* the same photo drawn by the warp renderer, laid exactly over the <img> */}
+      <canvas ref={canvas} aria-hidden className="absolute left-0 top-0 h-full w-full" style={{ opacity: warpOn ? 1 : 0 }} />
 
       {/* overlay layer in photo pixel space */}
       {geo && (
