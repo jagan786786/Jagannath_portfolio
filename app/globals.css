@@ -63,8 +63,8 @@ body {
   background-size: 56px 56px;
 }
 
-.reveal { opacity: 1; transform: none; transition: opacity 700ms ease, transform 700ms ease; }
-.js .reveal:not(.in) { opacity: 0; transform: translateY(24px); }
+.reveal { opacity: 1; transform: none; transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1); }
+.js .reveal:not(.in) { opacity: 0; transform: translateY(18px); }
 
 @keyframes blink { 50% { opacity: 0; } }
 .caret { animation: blink 1s steps(1) infinite; }
