@@ -4,6 +4,7 @@ import Nav from "@/components/nav"
 import Clock from "@/components/clock"
 import Typed from "@/components/typed"
 import Reveal from "@/components/reveal"
+import SmoothScroll from "@/components/smooth-scroll"
 import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
 import SkillOrbit from "@/components/skill-orbit"
@@ -58,6 +59,7 @@ export default function Home() {
 
   return (
     <>
+      <SmoothScroll />
       <Reveal />
       <Assistant name={site.short} avatar="/profile.webp" greeting={`Hi! I'm ${site.short}'s AI twin. Ask me about his work, experience or stack.`} qa={qa} />
       <Nav name={site.short} initials={site.initials} linkedin={site.linkedin} />

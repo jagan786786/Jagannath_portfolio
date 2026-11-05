@@ -8,6 +8,10 @@ html {
   color-scheme: dark;
   overflow-x: clip;
 }
+/* Lenis drives scrolling when it is active; the browser's own smoothing would fight it */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
