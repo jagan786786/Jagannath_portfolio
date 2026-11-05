@@ -164,7 +164,7 @@ export default function Home() {
             </div>
           </div>
 
-          <a href="#about" className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs text-muted hover:text-ink md:flex">
+          <a href="#about" className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs text-muted hover:text-ink md:flex">
             <span className="flex h-9 w-5 justify-center rounded-full border border-white/20 pt-1.5"><span className="scroll-cue h-2 w-0.5 rounded bg-violet-soft" /></span>
             Scroll to explore
           </a>
