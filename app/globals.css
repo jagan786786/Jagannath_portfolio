@@ -8,6 +8,10 @@ html {
   color-scheme: dark;
   overflow-x: clip;
 }
+/* Lenis drives scrolling when it is active; the browser's own smoothing would fight it */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -59,8 +63,8 @@ body {
   background-size: 56px 56px;
 }
 
-.reveal { opacity: 1; transform: none; transition: opacity 700ms ease, transform 700ms ease; }
-.js .reveal:not(.in) { opacity: 0; transform: translateY(24px); }
+.reveal { opacity: 1; transform: none; transition: opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1); }
+.js .reveal:not(.in) { opacity: 0; transform: translateY(18px); }
 
 @keyframes blink { 50% { opacity: 0; } }
 .caret { animation: blink 1s steps(1) infinite; }
@@ -159,8 +163,6 @@ body {
 /* ---------- hero photo overlays ---------- */
 .face-flicker { animation: face-flicker 0.9s steps(3, end) infinite; }
 @keyframes face-flicker { 0% { opacity: 0.85; } 33% { opacity: 1; } 66% { opacity: 0.7; } 100% { opacity: 0.95; } }
-.kbd-type { animation: kbd-type 0.28s ease-in-out infinite alternate; }
-@keyframes kbd-type { from { opacity: 0.45; } to { opacity: 0.95; } }
 .kbd-idle { opacity: 0.35; animation: kbd-idle 3s ease-in-out infinite; }
 @keyframes kbd-idle { 50% { opacity: 0.55; } }
 .laptop-scan { overflow: hidden; }
@@ -172,18 +174,24 @@ body {
 @keyframes laptop-scan { from { transform: translateX(-20px); } to { transform: translateX(100px); } }
 
 /* ---------- typing figure ---------- */
-.tap-a { animation: tap-a 0.26s ease-in-out infinite alternate; }
-.tap-b { animation: tap-b 0.22s ease-in-out infinite alternate; animation-delay: -0.11s; }
-@keyframes tap-a { 0% { transform: translate(0, 0); } 40% { transform: translate(0.5px, 1.9px) scaleY(0.98); } 100% { transform: translate(-0.3px, 0.2px); } }
-@keyframes tap-b { 0% { transform: translate(0, 0.2px); } 50% { transform: translate(-0.6px, 2.1px) scaleY(0.975); } 100% { transform: translate(0.3px, 0); } }
-.pose-nod { animation: pose-nod 1.6s ease-in-out infinite; }
-@keyframes pose-nod { 0%, 100% { transform: rotate(0deg) translateY(0); } 30% { transform: rotate(0.9deg) translateY(0.8px); } 65% { transform: rotate(0.3deg) translateY(0.3px); } }
 .pose-think { transition: transform 0.7s cubic-bezier(.4,0,.2,1); transform: rotate(-1.6deg) translateY(-1.2px); }
 .pose-rest { transition: transform 0.7s cubic-bezier(.4,0,.2,1); transform: none; }
-@media (prefers-reduced-motion: reduce) { .tap-a, .tap-b, .pose-nod { animation: none; } }
 
 /* ---------- per-keystroke figure motion ---------- */
 .hand { transition: transform 70ms ease-out; }
 .hand.hand-down { transform: translate(0.4px, 2.1px) scaleY(0.975); transition-duration: 35ms; }
 .hand.hand-lift { transform: translate(0, -0.8px); transition: transform 600ms ease; }
 .pose-glance { transition: transform 260ms ease-out; transform: rotate(0.9deg) translateY(0.9px); }
+
+/* hero melts into the page below instead of ending on a hard edge */
+.hero-fade::after { content: ""; position: absolute; inset: auto 0 0; height: 30%; z-index: 4; pointer-events: none; background: linear-gradient(rgb(5 3 13 / 0), #05030d 92%); }
+.hero-photo { will-change: transform, opacity; }
+
+/* experience timeline: dots light up as the fill line reaches them */
+.timeline-dot { background: #2a2450; transition: background-color .4s ease, box-shadow .4s ease; }
+.timeline-dot.lit { background: #7c5cff; box-shadow: 0 0 14px rgb(124 92 255 / 0.8); }
+.space-y-6 > [aria-hidden].origin-top { margin-top: 0 !important; transition: transform 120ms linear; }
+
+/* a key lighting up under the finger that pressed it (hero photo) */
+.key-glow { position: absolute; width: 14px; height: 10px; margin: -5px 0 0 -7px; border-radius: 50%; background: radial-gradient(closest-side, rgb(205 185 255 / 0.95), rgb(150 110 255 / 0)); mix-blend-mode: screen; opacity: 0; transition: opacity 280ms ease-out; pointer-events: none; }
+.key-glow.hit { opacity: 1; transition: none; }

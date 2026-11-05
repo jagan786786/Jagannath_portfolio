@@ -4,6 +4,9 @@ import Nav from "@/components/nav"
 import Clock from "@/components/clock"
 import Typed from "@/components/typed"
 import Reveal from "@/components/reveal"
+import SmoothScroll from "@/components/smooth-scroll"
+import HeroScroll from "@/components/hero-scroll"
+import TimelineFill from "@/components/timeline-fill"
 import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
 import SkillOrbit from "@/components/skill-orbit"
@@ -58,13 +61,15 @@ export default function Home() {
 
   return (
     <>
+      <SmoothScroll />
+      <HeroScroll />
       <Reveal />
       <Assistant name={site.short} avatar="/profile.webp" greeting={`Hi! I'm ${site.short}'s AI twin. Ask me about his work, experience or stack.`} qa={qa} />
       <Nav name={site.short} initials={site.initials} linkedin={site.linkedin} />
 
       <main>
         {/* ------------------------------------------------------------ Hero */}
-        <section id="home" className="relative flex min-h-[100svh] items-center overflow-hidden pt-16">
+        <section id="home" className="hero-fade relative flex min-h-[100svh] items-center overflow-hidden pt-16">
           <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 28%, rgba(5,3,13,0.75) 40%, rgba(5,3,13,0) 56%)" }} />
 
           {hero.image ? (
@@ -100,7 +105,7 @@ export default function Home() {
             <NightScene className="pointer-events-none absolute inset-0 hidden lg:block" quote={hero.quote} author={site.short.toUpperCase()} status={statusLines} />
           )}
 
-          <div className="relative z-10 mx-auto w-full max-w-6xl px-5 py-20">
+          <div data-hero-copy className="relative z-10 mx-auto w-full max-w-6xl px-5 py-20 will-change-transform">
             <div className="max-w-2xl">
               <p className="eyebrow"><Typed text="// Hello, I'm" /></p>
               <h1 className="mt-4 font-display text-6xl font-extrabold leading-none tracking-[-0.04em] sm:text-8xl lg:text-[6.25rem] xl:text-[6.75rem]">
@@ -159,7 +164,7 @@ export default function Home() {
             </div>
           </div>
 
-          <a href="#about" className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs text-muted hover:text-ink md:flex">
+          <a href="#about" className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs text-muted hover:text-ink md:flex">
             <span className="flex h-9 w-5 justify-center rounded-full border border-white/20 pt-1.5"><span className="scroll-cue h-2 w-0.5 rounded bg-violet-soft" /></span>
             Scroll to explore
           </a>
@@ -238,9 +243,10 @@ export default function Home() {
           </div>
 
           <ol className="relative mt-14 space-y-6 border-l border-line pl-8 md:ml-4">
+            <TimelineFill />
             {experience.map((job, i) => (
               <li key={job.company + job.role} className="reveal relative">
-                <span className={`absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night ${i === 0 ? "bg-violet shadow-glow" : "bg-[#2a2450]"}`} />
+                <span data-dot className="timeline-dot absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night" />
                 <div className="card p-6">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <h3 className="font-display text-xl font-bold">
@@ -257,7 +263,7 @@ export default function Home() {
               </li>
             ))}
             <li className="reveal relative">
-              <span className="absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night bg-[#2a2450]" />
+              <span data-dot className="timeline-dot absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night" />
               <div className="card p-6">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="font-display text-xl font-bold">{education.degree}</h3>

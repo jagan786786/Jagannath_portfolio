@@ -3,6 +3,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import CodeEditor from "@/components/code-editor"
 import { useHumanTyping } from "@/lib/human-typing"
+import { IH, IW, PhotoWarp, POINTS, type Fit } from "@/lib/photo-warp"
+import { keyFor, keyPos } from "@/lib/keyboard"
 
 /*
   Brings the hero photo to life. Every overlay is placed in the photo's own
@@ -11,8 +13,6 @@ import { useHumanTyping } from "@/lib/human-typing"
   keyboard, and so on, at any screen size.
 */
 
-const IW = 1024
-const IH = 572
 
 // Monitor screen corners in the photo: top-left, top-right, bottom-right, bottom-left.
 const SCREEN: [number, number][] = [[668, 215], [834, 221], [830, 352], [665, 334]]
@@ -79,8 +79,48 @@ export default function HeroPhoto({
 }) {
   const box = useRef<HTMLDivElement>(null)
   const visible = useRef(true)
-  const [geo, setGeo] = useState<{ s: number; x: number; y: number } | null>(null)
+  const [geo, setGeo] = useState<Fit | null>(null)
+  const canvas = useRef<HTMLCanvasElement>(null)
+  const warp = useRef<PhotoWarp | null>(null)
+  const [warpOn, setWarpOn] = useState(false)
+  // per-frame motion values, written by the animator and read by the renderer
+  const offs = useRef(new Float32Array(POINTS.length * 2))
+  const headPose = useRef({ a: 0, x: 0, y: 0 })
+  const fingerAt = useRef(new Float64Array(POINTS.length).fill(-1e9)) // last press time per finger
+  const hands = useRef({ L: { x: 0, y: 0, tx: 0, ty: 0, last: 0 }, R: { x: 0, y: 0, tx: 0, ty: 0, last: 0 } })
+  const glows = useRef<(HTMLSpanElement | null)[]>([])
+  const glowNext = useRef(0)
+  const thinkingRef = useRef(false)
+  const phaseRef = useRef<string>("edit")
+  const dip = useRef(0) // head dips briefly to each new line
+
   const typing = useHumanTyping(visible)
+  // every keystroke: press the finger that types it (and Shift with the other
+  // pinky), drift that hand toward the key, light the key up
+  useEffect(() => {
+    const k = typing.key
+    if (!k || !warpOn) return
+    const key = keyFor(k.ch)
+    const now = performance.now()
+    fingerAt.current[key.finger] = now
+    if (key.shift) fingerAt.current[key.hand === "L" ? 8 : 0] = now
+    const h = hands.current[key.hand]
+    h.tx = key.hand === "L" ? (key.col - 2.5) * 0.45 : (key.col - 8.2) * 0.4
+    h.ty = (key.row - 2) * 0.35
+    h.last = now
+    if (k.kind === "enter") dip.current = 1
+    if (key.row < 4) {
+      const g = glows.current[glowNext.current++ % glows.current.length]
+      if (g) {
+        const [x, y] = keyPos(key.row, key.col)
+        g.style.left = `${x}px`; g.style.top = `${y}px`
+        g.classList.add("hit")
+        requestAnimationFrame(() => requestAnimationFrame(() => g.classList.remove("hit")))
+      }
+    }
+  }, [typing.key, warpOn])
+  useEffect(() => { thinkingRef.current = typing.thinking }, [typing.thinking])
+  useEffect(() => { phaseRef.current = typing.phase }, [typing.phase])
   // which hand is down right now: each keystroke presses one hand for ~80 ms
   const [down, setDown] = useState<{ L: boolean; R: boolean; enter: boolean }>({ L: false, R: false, enter: false })
   useEffect(() => {
@@ -101,7 +141,7 @@ export default function HeroPhoto({
       const cw = el.clientWidth, ch = el.clientHeight
       if (!cw || !ch) return
       const s = Math.max(cw / IW, ch / IH)
-      setGeo({ s, x: (cw - IW * s) * posX, y: (ch - IH * s) * posY })
+      setGeo({ s, x: (cw - IW * s) * posX, y: (ch - IH * s) * posY, w: cw, h: ch })
     }
     fit()
     const ro = new ResizeObserver(fit)
@@ -114,6 +154,68 @@ export default function HeroPhoto({
     if (box.current) io.observe(box.current)
     return () => io.disconnect()
   }, [])
+
+  // GPU renderer for the photo (falls back to the plain <img> without WebGL)
+  useEffect(() => {
+    if (!canvas.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const largest = (srcSet && srcSet.trim().match(/(\S+)\s+\d+w\s*$/)?.[1]) || src
+    warp.current = PhotoWarp.create(canvas.current, largest, () => setWarpOn(true))
+  }, [src, srcSet])
+  useEffect(() => { if (geo && warp.current) warp.current.resize(geo) }, [geo, warpOn])
+  useEffect(() => {
+    if (!warpOn || !geo) return
+    let raf = 0
+    let prev = performance.now()
+    const o = offs.current
+    const loop = (now: number) => {
+      const dt = Math.min(0.05, (now - prev) / 1000)
+      prev = now
+      // fingers: a quick 40 ms press, then a softer release
+      for (let i = 0; i < POINTS.length; i++) {
+        let v = 0
+        if (i <= 10 && i !== 4 && i !== 9) {
+          const e = (now - fingerAt.current[i]) / 1000
+          v = e < 0 ? 0 : e < 0.04 ? e / 0.04 : Math.exp(-(e - 0.04) / 0.07)
+        }
+        o[i * 2] = v * 0.45
+        o[i * 2 + 1] = v * 1.7
+      }
+      // hands drift to the keys in use, settle when idle, lift a little while thinking
+      for (const [id, idx, fingers] of [["L", 4, [0, 1, 2, 3]], ["R", 9, [5, 6, 7, 8, 10]]] as const) {
+        const h = hands.current[id]
+        const idle = now - h.last > 1400
+        const tx = idle ? 0 : h.tx
+        const ty = thinkingRef.current ? -0.9 : idle ? -0.3 : h.ty
+        const k = 1 - Math.exp(-dt * 7)
+        h.x += (tx - h.x) * k
+        h.y += (ty - h.y) * k
+        o[idx * 2] = h.x
+        o[idx * 2 + 1] = h.y
+        for (const f of fingers) { o[f * 2] += h.x * 0.8; o[f * 2 + 1] += h.y * 0.8 }
+      }
+      // breathing, about 14 breaths a minute: shoulders rise and the chest opens
+      const t = now / 1000
+      const breath = 0.5 + 0.5 * Math.sin((t * 2 * Math.PI) / 4.3)
+      o[11 * 2] = 0
+      o[11 * 2 + 1] = -0.95 * breath
+      // head: tiny idle sway, dips on Enter, leans back to think, glances down at the terminal
+      dip.current *= Math.exp(-dt / 0.35)
+      const thinking = thinkingRef.current
+      const looking = phaseRef.current !== "edit"
+      const hp = headPose.current
+      const ta = (thinking ? -0.024 : looking ? 0.012 : 0) + dip.current * 0.013 + Math.sin(t * 0.7) * 0.0025 + Math.sin(t * 1.9) * 0.0012
+      const tx = thinking ? -0.4 : looking ? 0.7 : Math.sin(t * 0.45) * 0.35
+      const ty = thinking ? -1.4 : looking ? 0.8 : dip.current * 0.6 - breath * 0.5
+      const hk = 1 - Math.exp(-dt * (thinking ? 2.2 : 4))
+      hp.a += (ta - hp.a) * hk
+      hp.x += (tx - hp.x) * hk
+      hp.y += (ty - hp.y) * hk
+      if (visible.current) warp.current?.draw(geo, o, hp)
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [warpOn, geo])
 
   // New idea each time he stops to think.
   const wasThinking = useRef(false)
@@ -162,6 +264,8 @@ export default function HeroPhoto({
         className="absolute max-w-none select-none"
         style={geo ? { left: geo.x, top: geo.y, width: IW * geo.s, height: IH * geo.s } : { inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: `${posX * 100}% ${posY * 100}%` }}
       />
+      {/* the same photo drawn by the warp renderer, laid exactly over the <img> */}
+      <canvas ref={canvas} aria-hidden className="absolute left-0 top-0 h-full w-full" style={{ opacity: warpOn ? 1 : 0 }} />
 
       {/* overlay layer in photo pixel space */}
       {geo && (
@@ -181,9 +285,9 @@ export default function HeroPhoto({
 
           {/* ---- he moves with the keys: each hand presses on its own keystrokes,
                 the head dips to the new line on Enter, tilts back when thinking ---- */}
-          {piece(452, 96, 168, 214, typing.thinking ? "pose-think" : down.enter ? "pose-glance" : "pose-rest", "70% 92%")}
-          {piece(592, 376, 62, 46, `hand ${down.L ? "hand-down" : ""} ${typing.thinking ? "hand-lift" : ""}`, "50% 100%")}
-          {piece(668, 392, 64, 52, `hand ${down.R ? "hand-down" : ""} ${typing.thinking ? "hand-lift" : ""}`, "50% 100%")}
+          {!warpOn && piece(452, 96, 168, 214, typing.thinking ? "pose-think" : down.enter ? "pose-glance" : "pose-rest", "70% 92%")}
+          {!warpOn && piece(592, 376, 62, 46, `hand ${down.L ? "hand-down" : ""} ${typing.thinking ? "hand-lift" : ""}`, "50% 100%")}
+          {!warpOn && piece(668, 392, 64, 52, `hand ${down.R ? "hand-down" : ""} ${typing.thinking ? "hand-lift" : ""}`, "50% 100%")}
 
           {/* screen light on his face: flickers while he types, steadies while he thinks */}
           <div
@@ -208,8 +312,10 @@ export default function HeroPhoto({
 
           {/* keyboard RGB glow: soft base, and a flash under whichever half gets the key */}
           <div className="kbd-idle absolute rounded-full mix-blend-screen" style={{ left: 600, top: 410, width: 160, height: 46, background: "radial-gradient(closest-side, rgba(150,110,255,0.75), rgba(150,110,255,0))" }} />
-          <div className="absolute rounded-full mix-blend-screen transition-opacity duration-75" style={{ left: 596, top: 396, width: 80, height: 36, opacity: down.L ? 0.9 : 0, background: "radial-gradient(closest-side, rgba(180,150,255,0.85), rgba(180,150,255,0))" }} />
-          <div className="absolute rounded-full mix-blend-screen transition-opacity duration-75" style={{ left: 668, top: 404, width: 84, height: 38, opacity: down.R ? 0.9 : 0, background: "radial-gradient(closest-side, rgba(180,150,255,0.85), rgba(180,150,255,0))" }} />
+          {!warpOn && <div className="absolute rounded-full mix-blend-screen transition-opacity duration-75" style={{ left: 596, top: 396, width: 80, height: 36, opacity: down.L ? 0.9 : 0, background: "radial-gradient(closest-side, rgba(180,150,255,0.85), rgba(180,150,255,0))" }} />}
+          {!warpOn && <div className="absolute rounded-full mix-blend-screen transition-opacity duration-75" style={{ left: 668, top: 404, width: 84, height: 38, opacity: down.R ? 0.9 : 0, background: "radial-gradient(closest-side, rgba(180,150,255,0.85), rgba(180,150,255,0))" }} />}
+          {/* the key under the finger lights up for a moment */}
+          {Array.from({ length: 8 }, (_, i) => <span key={i} ref={(el) => { glows.current[i] = el }} className="key-glow" />)}
 
           {/* thinking: a glass bubble with the idea he is weighing */}
           <div className={`absolute transition-all duration-500 ${typing.thinking ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`} style={{ left: 612, top: 84 }}>
