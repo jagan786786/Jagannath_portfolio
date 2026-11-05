@@ -200,3 +200,7 @@ body {
 .timeline-dot { background: #2a2450; transition: background-color .4s ease, box-shadow .4s ease; }
 .timeline-dot.lit { background: #7c5cff; box-shadow: 0 0 14px rgb(124 92 255 / 0.8); }
 .space-y-6 > [aria-hidden].origin-top { margin-top: 0 !important; transition: transform 120ms linear; }
+
+/* a key lighting up under the finger that pressed it (hero photo) */
+.key-glow { position: absolute; width: 14px; height: 10px; margin: -5px 0 0 -7px; border-radius: 50%; background: radial-gradient(closest-side, rgb(205 185 255 / 0.95), rgb(150 110 255 / 0)); mix-blend-mode: screen; opacity: 0; transition: opacity 280ms ease-out; pointer-events: none; }
+.key-glow.hit { opacity: 1; transition: none; }

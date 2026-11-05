@@ -219,7 +219,7 @@ export type TypingState = {
   phase: "edit" | "term" | "running" | "done"
   term: string
   result: string
-  key: { id: number; hand: Hand; kind: "type" | "back" | "enter" | "tab" | "save" } | null
+  key: { id: number; hand: Hand; kind: "type" | "back" | "enter" | "tab" | "save"; ch: string } | null
 }
 
 function initial(snip: Snippet): TypingState {
@@ -242,7 +242,7 @@ export function useHumanTyping(visible: React.MutableRefObject<boolean>, snippet
     let timer: ReturnType<typeof setTimeout>
     setSt(initial(snip))
 
-    const press = (hand: Hand, kind: NonNullable<TypingState["key"]>["kind"]) => ({ id: ++keyId.current, hand, kind })
+    const press = (hand: Hand, kind: NonNullable<TypingState["key"]>["kind"], ch: string) => ({ id: ++keyId.current, hand, kind, ch })
 
     const step = () => {
       if (!visible.current) { timer = setTimeout(step, 400); return }
@@ -254,27 +254,27 @@ export function useHumanTyping(visible: React.MutableRefObject<boolean>, snippet
           case "type": {
             // opening bracket: the editor drops the closer right after the cursor
             const cl = ({ "(": ")", "[": "]", "{": "}" } as Record<string, string>)[a.ch] ?? ""
-            return { ...base, doc: s.doc + a.ch, closers: cl + s.closers, dirty: true, key: press(handFor(a.ch), "type") }
+            return { ...base, doc: s.doc + a.ch, closers: cl + s.closers, dirty: true, key: press(handFor(a.ch), "type", a.ch) }
           }
           case "over":
-            return { ...base, doc: s.doc + a.ch, closers: s.closers.slice(1), key: press("R", "type") }
+            return { ...base, doc: s.doc + a.ch, closers: s.closers.slice(1), key: press("R", "type", a.ch) }
           case "back":
-            return { ...base, doc: s.doc.slice(0, -1), dirty: true, key: press("R", "back") }
+            return { ...base, doc: s.doc.slice(0, -1), dirty: true, key: press("R", "back", "\b") }
           case "enter":
             // open brackets travel down with the cursor, like in VS Code
-            return { ...base, doc: s.doc + "\n" + a.indent, dirty: true, key: press("R", "enter") }
+            return { ...base, doc: s.doc + "\n" + a.indent, dirty: true, key: press("R", "enter", "\n") }
           case "suggest":
             return { ...base, suggest: { word: a.word, typed: a.typed } }
           case "complete":
-            return { ...base, doc: s.doc + a.text, suggest: null, dirty: true, key: press("L", "tab") }
+            return { ...base, doc: s.doc + a.text, suggest: null, dirty: true, key: press("L", "tab", "\t") }
           case "pause":
             return { ...base, thinking: !!a.think, idle: true }
           case "save":
-            return { ...base, dirty: false, key: press("L", "save") }
+            return { ...base, dirty: false, key: press("L", "save", "s") }
           case "term":
-            return { ...base, phase: "term", term: s.term + a.ch, key: press(handFor(a.ch), "type") }
+            return { ...base, phase: "term", term: s.term + a.ch, key: press(handFor(a.ch), "type", a.ch) }
           case "termEnter":
-            return { ...base, phase: "running", key: press("R", "enter") }
+            return { ...base, phase: "running", key: press("R", "enter", "\n") }
           case "run":
             return { ...base, phase: "done", idle: true }
           case "done":
