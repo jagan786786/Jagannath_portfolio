@@ -91,6 +91,8 @@ export default function HeroPhoto({
   const glows = useRef<(HTMLSpanElement | null)[]>([])
   const glowNext = useRef(0)
   const thinkingRef = useRef(false)
+  const phaseRef = useRef<string>("edit")
+  const dip = useRef(0) // head dips briefly to each new line
 
   const typing = useHumanTyping(visible)
   // every keystroke: press the finger that types it (and Shift with the other
@@ -106,6 +108,7 @@ export default function HeroPhoto({
     h.tx = key.hand === "L" ? (key.col - 2.5) * 0.45 : (key.col - 8.2) * 0.4
     h.ty = (key.row - 2) * 0.35
     h.last = now
+    if (k.kind === "enter") dip.current = 1
     if (key.row < 4) {
       const g = glows.current[glowNext.current++ % glows.current.length]
       if (g) {
@@ -117,6 +120,7 @@ export default function HeroPhoto({
     }
   }, [typing.key, warpOn])
   useEffect(() => { thinkingRef.current = typing.thinking }, [typing.thinking])
+  useEffect(() => { phaseRef.current = typing.phase }, [typing.phase])
   // which hand is down right now: each keystroke presses one hand for ~80 ms
   const [down, setDown] = useState<{ L: boolean; R: boolean; enter: boolean }>({ L: false, R: false, enter: false })
   useEffect(() => {
@@ -189,7 +193,24 @@ export default function HeroPhoto({
         o[idx * 2 + 1] = h.y
         for (const f of fingers) { o[f * 2] += h.x * 0.8; o[f * 2 + 1] += h.y * 0.8 }
       }
-      if (visible.current) warp.current?.draw(geo, o, headPose.current)
+      // breathing, about 14 breaths a minute: shoulders rise and the chest opens
+      const t = now / 1000
+      const breath = 0.5 + 0.5 * Math.sin((t * 2 * Math.PI) / 4.3)
+      o[11 * 2] = 0
+      o[11 * 2 + 1] = -0.95 * breath
+      // head: tiny idle sway, dips on Enter, leans back to think, glances down at the terminal
+      dip.current *= Math.exp(-dt / 0.35)
+      const thinking = thinkingRef.current
+      const looking = phaseRef.current !== "edit"
+      const hp = headPose.current
+      const ta = (thinking ? -0.024 : looking ? 0.012 : 0) + dip.current * 0.013 + Math.sin(t * 0.7) * 0.0025 + Math.sin(t * 1.9) * 0.0012
+      const tx = thinking ? -0.4 : looking ? 0.7 : Math.sin(t * 0.45) * 0.35
+      const ty = thinking ? -1.4 : looking ? 0.8 : dip.current * 0.6 - breath * 0.5
+      const hk = 1 - Math.exp(-dt * (thinking ? 2.2 : 4))
+      hp.a += (ta - hp.a) * hk
+      hp.x += (tx - hp.x) * hk
+      hp.y += (ty - hp.y) * hk
+      if (visible.current) warp.current?.draw(geo, o, hp)
       raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
@@ -264,7 +285,7 @@ export default function HeroPhoto({
 
           {/* ---- he moves with the keys: each hand presses on its own keystrokes,
                 the head dips to the new line on Enter, tilts back when thinking ---- */}
-          {piece(452, 96, 168, 214, typing.thinking ? "pose-think" : down.enter ? "pose-glance" : "pose-rest", "70% 92%")}
+          {!warpOn && piece(452, 96, 168, 214, typing.thinking ? "pose-think" : down.enter ? "pose-glance" : "pose-rest", "70% 92%")}
           {!warpOn && piece(592, 376, 62, 46, `hand ${down.L ? "hand-down" : ""} ${typing.thinking ? "hand-lift" : ""}`, "50% 100%")}
           {!warpOn && piece(668, 392, 64, 52, `hand ${down.R ? "hand-down" : ""} ${typing.thinking ? "hand-lift" : ""}`, "50% 100%")}
 
