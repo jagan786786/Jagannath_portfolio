@@ -17,6 +17,19 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const bar = useRef<HTMLDivElement>(null)
+  const list = useRef<HTMLUListElement>(null)
+  const [pill, setPill] = useState<{ x: number; w: number } | null>(null)
+
+  // slide the highlight under the link for the section on screen
+  useEffect(() => {
+    const place = () => {
+      const a = list.current?.querySelector<HTMLAnchorElement>(`a[href="#${active}"]`)
+      if (a) setPill({ x: a.offsetLeft, w: a.offsetWidth })
+    }
+    place()
+    window.addEventListener("resize", place)
+    return () => window.removeEventListener("resize", place)
+  }, [active])
 
   useEffect(() => {
     // header tightens after the first bit of scroll; the progress line tracks the whole page
@@ -48,13 +61,20 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
         </a>
 
         <nav aria-label="Sections" className="hidden md:block">
-          <ul className="flex gap-7 text-sm">
+          <ul ref={list} className="relative flex gap-1 text-sm">
+            {pill && (
+              <li
+                aria-hidden
+                className="absolute inset-y-0 left-0 rounded-full border border-violet/35 bg-violet/15 transition-[transform,width] duration-500 ease-[cubic-bezier(.2,.8,.2,1)]"
+                style={{ width: pill.w, transform: `translateX(${pill.x}px)` }}
+              />
+            )}
             {items.map((i) => (
-              <li key={i.id}>
+              <li key={i.id} className="relative">
                 <a
                   href={`#${i.id}`}
                   aria-current={active === i.id ? "true" : undefined}
-                  className={active === i.id ? "text-violet-soft" : "text-muted hover:text-ink"}
+                  className={`block rounded-full px-3.5 py-1.5 transition-colors ${active === i.id ? "text-white" : "text-muted hover:text-ink"}`}
                 >
                   {i.label}
                 </a>
