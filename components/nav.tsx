@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ArrowRight, Menu, X } from "lucide-react"
 
 const items = [
@@ -16,9 +16,15 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
   const [active, setActive] = useState("home")
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const bar = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
+    // header tightens after the first bit of scroll; the progress line tracks the whole page
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24)
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      if (bar.current) bar.current.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`
+    }
     onScroll()
     window.addEventListener("scroll", onScroll, { passive: true })
     const io = new IntersectionObserver(
@@ -31,9 +37,9 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors ${scrolled || open ? "border-b border-line bg-night/80 backdrop-blur-xl" : "border-b border-transparent"}`}
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${scrolled || open ? "border-line bg-night/70 backdrop-blur-xl backdrop-saturate-150" : "border-transparent"}`}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+      <div className={`mx-auto flex max-w-6xl items-center justify-between px-5 transition-[height] duration-300 ${scrolled ? "h-14" : "h-16"}`}>
         <a href="#home" className="flex items-center gap-2.5 font-display text-lg font-bold">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-violet to-violet-deep text-xs font-extrabold text-white shadow-glow">
             {initials}
@@ -71,6 +77,9 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
+
+      {/* reading progress */}
+      <div ref={bar} aria-hidden className="absolute inset-x-0 -bottom-px h-0.5 origin-left scale-x-0 bg-gradient-to-r from-violet to-violet-soft" />
 
       {open && (
         <nav aria-label="Sections" className="border-t border-line px-5 pb-5 md:hidden">
