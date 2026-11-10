@@ -73,20 +73,20 @@ export default function ProjectsGrid({ projects }: { projects: Project[] }) {
         })}
       </div>
 
-      <ul className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {shown.map((p) => <Card key={p.title} p={p} />)}
+      <ul className="deal grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {shown.map((p, i) => <Card key={p.title} p={p} i={i} />)}
       </ul>
     </>
   )
 }
 
-function Card({ p }: { p: Project }) {
+function Card({ p, i }: { p: Project; i: number }) {
   const [open, setOpen] = useState(false)
   const href = p.demo || p.code
   const shownTags = p.tags.slice(0, 3)
   const moreTags = p.tags.length - shownTags.length
   return (
-    <li className="card group relative flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:border-violet/40 hover:shadow-glow">
+    <li className="card group relative flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:border-violet/40 hover:shadow-glow" style={{ ["--i" as string]: i }}>
       <Preview p={p} />
       <div className="flex flex-1 flex-col p-6">
         {/* one row of tags on every card */}
