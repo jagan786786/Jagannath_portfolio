@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { Fragment, type ReactNode } from "react"
 import { ArrowRight, ArrowUpRight, Briefcase, Download, Github, GraduationCap, Heart, Linkedin, Mail, MapPin, Quote, Sparkles, Zap, Code2, BarChart3, Award, Send } from "lucide-react"
 import Nav from "@/components/nav"
 import Clock from "@/components/clock"
@@ -25,10 +25,30 @@ function LeetCodeIcon({ size = 18 }: { size?: number; className?: string; "aria-
   return <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden><path d={brandIcons.leetcode.path} fill="currentColor" /></svg>
 }
 
+// Splits a headline into words that slide up one after another when their block reveals.
+function Words({ lead, accent }: { lead: string; accent: string }) {
+  const words = [...lead.split(" ").map((w) => [w, false] as const), ...accent.split(" ").map((w) => [w, true] as const)]
+  return (
+    <>
+      <span className="sr-only">{`${lead} ${accent}`}</span>
+      <span aria-hidden>
+        {words.map(([w, hi], i) => (
+          <Fragment key={i}>
+            <span className="word">
+              <span className={hi ? "grad" : undefined} style={{ ["--w" as string]: i }}>{w}</span>
+            </span>
+            {i < words.length - 1 ? " " : null}
+          </Fragment>
+        ))}
+      </span>
+    </>
+  )
+}
+
 function Heading({ lead, accent, className = "" }: { lead: string; accent: string; className?: string }) {
   return (
     <h2 className={`font-display text-4xl font-extrabold leading-[1.08] tracking-tight [text-wrap:balance] sm:text-5xl ${className}`}>
-      {lead} <span className="grad">{accent}</span>
+      <Words lead={lead} accent={accent} />
     </h2>
   )
 }
@@ -296,7 +316,7 @@ export default function Home() {
               <div className="text-center lg:text-left">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/10 px-3 py-1 text-xs font-medium text-violet-soft"><Zap size={13} fill="currentColor" aria-hidden /> My Toolbox</span>
                 <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
-                  Skills that power <span className="grad">intelligent products</span>
+                  <Words lead="Skills that power" accent="intelligent products" />
                 </h2>
                 <p className="mt-4 text-muted">The models, languages and tools I use to turn ideas into working AI.</p>
               </div>
@@ -381,9 +401,9 @@ export default function Home() {
 
       {/* ------------------------------------------------------------ Footer */}
       <footer className="relative z-[1] border-t border-line">
-        <div className="mx-auto max-w-6xl px-5 py-20 text-center">
+        <div className="reveal mx-auto max-w-6xl px-5 py-20 text-center">
           <p className="eyebrow inline-block rounded-full border border-line px-3 py-1 !text-[10px]">// end of the page</p>
-          <h2 className="mt-6 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Thanks for <span className="grad">stopping by!</span></h2>
+          <h2 className="mt-6 font-display text-4xl font-extrabold tracking-tight sm:text-5xl"><Words lead="Thanks for" accent="stopping by!" /></h2>
           <p className="mx-auto mt-4 max-w-md text-muted">If something here sparked an idea, I&apos;d like to hear it.</p>
         </div>
 
