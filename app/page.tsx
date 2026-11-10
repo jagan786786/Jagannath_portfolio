@@ -268,7 +268,7 @@ export default function Home() {
           <ol className="relative mt-14 space-y-6 border-l border-line pl-8 md:ml-4">
             <TimelineFill />
             {experience.map((job, i) => (
-              <li key={job.company + job.role} className="reveal relative">
+              <li key={job.company + job.role} className="reveal swing relative">
                 <span data-dot className="timeline-dot absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night" />
                 <div className="card p-6">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -285,7 +285,7 @@ export default function Home() {
                 </div>
               </li>
             ))}
-            <li className="reveal relative">
+            <li className="reveal swing relative">
               <span data-dot className="timeline-dot absolute -left-[41px] top-6 h-4 w-4 rounded-full border-2 border-night" />
               <div className="card p-6">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
