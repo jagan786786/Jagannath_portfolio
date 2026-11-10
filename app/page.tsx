@@ -5,6 +5,7 @@ import Clock from "@/components/clock"
 import Typed from "@/components/typed"
 import Reveal from "@/components/reveal"
 import SmoothScroll from "@/components/smooth-scroll"
+import StarField from "@/components/star-field"
 import HeroScroll from "@/components/hero-scroll"
 import TimelineFill from "@/components/timeline-fill"
 import ProjectsGrid from "@/components/projects-grid"
@@ -62,12 +63,13 @@ export default function Home() {
   return (
     <>
       <SmoothScroll />
+      <StarField />
       <HeroScroll />
       <Reveal />
       <Assistant name={site.short} avatar="/profile.webp" greeting={`Hi! I'm ${site.short}'s AI twin. Ask me about his work, experience or stack.`} qa={qa} />
       <Nav name={site.short} initials={site.initials} linkedin={site.linkedin} />
 
-      <main>
+      <main className="relative z-[1]">
         {/* ------------------------------------------------------------ Hero */}
         <section id="home" className="hero-fade relative flex min-h-[100svh] items-center overflow-hidden pt-16">
           <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 28%, rgba(5,3,13,0.75) 40%, rgba(5,3,13,0) 56%)" }} />
@@ -378,7 +380,7 @@ export default function Home() {
       </main>
 
       {/* ------------------------------------------------------------ Footer */}
-      <footer className="border-t border-line">
+      <footer className="relative z-[1] border-t border-line">
         <div className="mx-auto max-w-6xl px-5 py-20 text-center">
           <p className="eyebrow inline-block rounded-full border border-line px-3 py-1 !text-[10px]">// end of the page</p>
           <h2 className="mt-6 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Thanks for <span className="grad">stopping by!</span></h2>
