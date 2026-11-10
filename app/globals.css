@@ -127,6 +127,12 @@ body {
 .orbit-ccw { animation: orbit 60s linear infinite reverse; }
 .orbit-cw .orbit-counter { animation: orbit 40s linear infinite reverse; }
 .orbit-ccw .orbit-counter { animation: orbit 60s linear infinite; }
+
+/* the orbit lies on a tilted 3D plane; logos and the core stand upright facing the viewer */
+.orbit-3d { perspective: 900px; --tilt: 60deg; --spin: 0deg; }
+.orbit-plane { transform-style: preserve-3d; transform: translate(-50%, -50%) rotateX(var(--tilt)) rotateZ(var(--spin)); transition: transform 400ms cubic-bezier(.16,1,.3,1); }
+.orbit-ring, .orbit-slot, .orbit-counter { transform-style: preserve-3d; }
+.orbit-upright { transform: rotateZ(calc(-1 * var(--spin))) rotateX(calc(-1 * var(--tilt))); }
 @keyframes orbit { to { transform: rotate(360deg); } }
 .hero-photo {
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%), linear-gradient(0deg, transparent 0%, #000 12%, #000 90%, transparent 100%);
