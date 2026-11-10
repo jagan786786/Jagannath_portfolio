@@ -8,6 +8,7 @@ import SmoothScroll from "@/components/smooth-scroll"
 import StarField from "@/components/star-field"
 import HeroScroll from "@/components/hero-scroll"
 import TimelineFill from "@/components/timeline-fill"
+import CountUp from "@/components/count-up"
 import ProjectsGrid from "@/components/projects-grid"
 import SkillsGrid from "@/components/skills-grid"
 import SkillOrbit from "@/components/skill-orbit"
@@ -334,7 +335,7 @@ export default function Home() {
                   <li key={s.label} className="flex items-center gap-3">
                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet/10 text-violet-soft"><Icon size={17} aria-hidden /></span>
                     <span>
-                      <span className="block font-display text-xl font-bold leading-none">{s.value}</span>
+                      <span className="block font-display text-xl font-bold leading-none"><CountUp value={s.value} /></span>
                       <span className="mt-1 block text-xs text-muted">{s.label}</span>
                     </span>
                   </li>
