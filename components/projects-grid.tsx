@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState, type PointerEvent as RPointerEvent } from "react"
 import { ArrowRight, ArrowUpRight, Brain, Building2, ChevronDown, Globe, LayoutGrid, Star, Wrench, Github, X } from "lucide-react"
 import type { Category, Project } from "@/lib/data"
 
@@ -82,11 +82,39 @@ export default function ProjectsGrid({ projects }: { projects: Project[] }) {
 
 function Card({ p, i }: { p: Project; i: number }) {
   const [open, setOpen] = useState(false)
+  const el = useRef<HTMLLIElement>(null)
+
+  // 3D tilt toward the cursor, with a sheen that follows it (mouse and pen only)
+  const onMove = (e: RPointerEvent<HTMLLIElement>) => {
+    if (e.pointerType === "touch" || open || !el.current) return
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const r = el.current.getBoundingClientRect()
+    const x = (e.clientX - r.left) / r.width
+    const y = (e.clientY - r.top) / r.height
+    el.current.style.setProperty("--ry", `${(x - 0.5) * 10}deg`)
+    el.current.style.setProperty("--rx", `${(0.5 - y) * 8}deg`)
+    el.current.style.setProperty("--gx", `${x * 100}%`)
+    el.current.style.setProperty("--gy", `${y * 100}%`)
+    el.current.classList.add("tilting")
+  }
+  const onLeave = () => {
+    if (!el.current) return
+    el.current.classList.remove("tilting")
+    el.current.style.setProperty("--rx", "0deg")
+    el.current.style.setProperty("--ry", "0deg")
+  }
   const href = p.demo || p.code
   const shownTags = p.tags.slice(0, 3)
   const moreTags = p.tags.length - shownTags.length
   return (
-    <li className="card group relative flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:border-violet/40 hover:shadow-glow" style={{ ["--i" as string]: i }}>
+    <li
+      ref={el}
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      className="tilt-card card group relative flex h-full flex-col overflow-hidden hover:border-violet/40 hover:shadow-glow"
+      style={{ ["--i" as string]: i }}
+    >
+      <span aria-hidden className="tilt-sheen" />
       <Preview p={p} />
       <div className="flex flex-1 flex-col p-6">
         {/* one row of tags on every card */}
@@ -100,7 +128,7 @@ function Card({ p, i }: { p: Project; i: number }) {
 
         <div className="mt-auto flex items-center justify-between pt-6">
           {p.highlights ? (
-            <button type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls={`hl-${p.title}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
+            <button type="button" onClick={() => { onLeave(); setOpen(true) }} aria-expanded={open} aria-controls={`hl-${p.title}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
               What I built <ChevronDown size={15} aria-hidden />
             </button>
           ) : href ? (
