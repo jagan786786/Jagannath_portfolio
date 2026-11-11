@@ -23,8 +23,9 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
   // slide the highlight under the link for the section on screen
   useEffect(() => {
     const place = () => {
-      const a = list.current?.querySelector<HTMLAnchorElement>(`a[href="#${active}"]`)
-      if (a) setPill({ x: a.offsetLeft, w: a.offsetWidth })
+      // measure the <li>: the link's own offsetLeft is relative to its <li>, so it is always 0
+      const li = list.current?.querySelector<HTMLAnchorElement>(`a[href="#${active}"]`)?.parentElement
+      if (li) setPill({ x: li.offsetLeft, w: li.offsetWidth })
     }
     place()
     window.addEventListener("resize", place)
