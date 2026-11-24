@@ -118,7 +118,7 @@ function Card({ p, i }: { p: Project; i: number }) {
       <Preview p={p} />
       <div className="flex flex-1 flex-col p-6">
         {/* one row of tags on every card */}
-        <ul className="flex flex-nowrap gap-2 overflow-hidden" aria-label="Tech stack">
+        <ul className="flex h-[26px] flex-wrap gap-2 overflow-hidden" aria-label="Tech stack">
           {shownTags.map((t) => <li key={t} className="chip shrink-0 whitespace-nowrap">{t}</li>)}
           {moreTags > 0 && <li className="chip shrink-0" title={p.tags.slice(3).join(", ")}>+{moreTags}</li>}
         </ul>
