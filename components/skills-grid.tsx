@@ -38,7 +38,7 @@ export default function SkillsGrid({ skills }: { skills: Skill[] }) {
               role="tab"
               aria-selected={on}
               onClick={() => { setG(x); setAll(false) }}
-              className={`rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition ${on ? "border-violet/60 bg-[#120b2e] text-white shadow-glow" : "border-line bg-white/[0.02] text-muted hover:border-violet/30 hover:text-ink"}`}
+              className={`tap-box rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition ${on ? "border-violet/60 bg-[#120b2e] text-white shadow-glow" : "border-line bg-white/[0.02] text-muted hover:border-violet/30 hover:text-ink"}`}
             >
               {x}
             </button>
@@ -51,7 +51,7 @@ export default function SkillsGrid({ skills }: { skills: Skill[] }) {
         {g === "All" && !all ? (
           <>
             {" "}— pick a category, or{" "}
-            <button type="button" onClick={() => setAll(true)} className="text-violet-soft underline underline-offset-4 hover:text-white">
+            <button type="button" onClick={() => setAll(true)} className="tap-box text-violet-soft underline underline-offset-4 hover:text-white">
               show everything
             </button>
             .

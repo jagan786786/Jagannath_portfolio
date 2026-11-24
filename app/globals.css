@@ -225,3 +225,11 @@ body {
 /* experience cards swing out from the timeline like doors opening toward you */
 .js .reveal.swing:not(.in) { transform: perspective(1100px) translate3d(-36px, 18px, 0) rotateY(-22deg); transform-origin: 0 50%; }
 .reveal.swing { transform-origin: 0 50%; }
+
+/* touch screens: small text buttons and chips get a comfortable 44px tap area
+   without changing how they look (the extra area is invisible) */
+@media (pointer: coarse) {
+  .tap { position: relative; display: inline-flex; align-items: center; min-height: 44px; }
+  .tap-box { position: relative; }
+  .tap-box::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
+}

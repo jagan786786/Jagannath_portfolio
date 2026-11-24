@@ -20,6 +20,16 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
   const list = useRef<HTMLUListElement>(null)
   const [pill, setPill] = useState<{ x: number; w: number } | null>(null)
 
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false) }
+    const wide = window.matchMedia("(min-width: 1024px)")
+    const onWide = () => { if (wide.matches) setOpen(false) }
+    window.addEventListener("keydown", onKey)
+    wide.addEventListener("change", onWide)
+    return () => { window.removeEventListener("keydown", onKey); wide.removeEventListener("change", onWide) }
+  }, [open])
+
   // slide the highlight under the link for the section on screen
   useEffect(() => {
     const place = () => {
@@ -61,7 +71,7 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
           {name}
         </a>
 
-        <nav aria-label="Sections" className="hidden md:block">
+        <nav aria-label="Sections" className="hidden lg:block">
           <ul ref={list} className="relative flex gap-1 text-sm">
             {pill && (
               <li
@@ -84,7 +94,7 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
           </ul>
         </nav>
 
-        <a href={linkedin} target="_blank" rel="noopener noreferrer" className="btn-primary hidden !rounded-full !px-4 !py-2 md:inline-flex">
+        <a href={linkedin} target="_blank" rel="noopener noreferrer" className="btn-primary hidden shrink-0 whitespace-nowrap !rounded-full !px-4 !py-2 lg:inline-flex">
           Let&apos;s Connect <ArrowRight size={15} aria-hidden />
         </a>
 
@@ -93,7 +103,7 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
           aria-label={open ? "Close menu" : "Open menu"}
-          className="rounded-lg p-2 text-muted hover:text-ink md:hidden"
+          className="-mr-1 grid h-11 w-11 place-items-center rounded-lg text-muted hover:text-ink lg:hidden"
         >
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -103,20 +113,23 @@ export default function Nav({ name, initials, linkedin }: { name: string; initia
       <div ref={bar} aria-hidden className="absolute inset-x-0 -bottom-px h-0.5 origin-left scale-x-0 bg-gradient-to-r from-violet to-violet-soft" />
 
       {open && (
-        <nav aria-label="Sections" className="border-t border-line px-5 pb-5 md:hidden">
-          <ul className="grid gap-1 pt-3">
+        <nav aria-label="Sections" className="max-h-[calc(100svh-3.5rem)] overflow-y-auto overscroll-contain border-t border-line px-5 pb-5 lg:hidden">
+          <ul className="mx-auto grid max-w-6xl gap-1 pt-3 sm:grid-cols-2">
             {items.map((i) => (
               <li key={i.id}>
                 <a
                   href={`#${i.id}`}
                   onClick={() => setOpen(false)}
-                  className={`block rounded-lg px-3 py-2.5 ${active === i.id ? "bg-violet/10 text-violet-soft" : "text-muted"}`}
+                  className={`flex min-h-11 items-center rounded-lg px-3 ${active === i.id ? "bg-violet/10 text-violet-soft" : "text-muted"}`}
                 >
                   {i.label}
                 </a>
               </li>
             ))}
           </ul>
+          <a href={linkedin} target="_blank" rel="noopener noreferrer" className="btn-primary mx-auto mt-4 flex w-full max-w-6xl justify-center">
+            Let&apos;s Connect <ArrowRight size={15} aria-hidden />
+          </a>
         </nav>
       )}
     </header>

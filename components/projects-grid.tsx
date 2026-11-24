@@ -118,7 +118,7 @@ function Card({ p, i }: { p: Project; i: number }) {
       <Preview p={p} />
       <div className="flex flex-1 flex-col p-6">
         {/* one row of tags on every card */}
-        <ul className="flex flex-nowrap gap-2 overflow-hidden" aria-label="Tech stack">
+        <ul className="flex h-[26px] flex-wrap gap-2 overflow-hidden" aria-label="Tech stack">
           {shownTags.map((t) => <li key={t} className="chip shrink-0 whitespace-nowrap">{t}</li>)}
           {moreTags > 0 && <li className="chip shrink-0" title={p.tags.slice(3).join(", ")}>+{moreTags}</li>}
         </ul>
@@ -128,16 +128,16 @@ function Card({ p, i }: { p: Project; i: number }) {
 
         <div className="mt-auto flex items-center justify-between pt-6">
           {p.highlights ? (
-            <button type="button" onClick={() => { onLeave(); setOpen(true) }} aria-expanded={open} aria-controls={`hl-${p.title}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
+            <button type="button" onClick={() => { onLeave(); setOpen(true) }} aria-expanded={open} aria-controls={`hl-${p.title}`} className="tap-box inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
               What I built <ChevronDown size={15} aria-hidden />
             </button>
           ) : href ? (
-            <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
+            <a href={href} target="_blank" rel="noopener noreferrer" className="tap-box inline-flex items-center gap-1.5 text-sm font-semibold text-violet-soft hover:text-white">
               {p.demo ? "View Project" : "View Code"} <ArrowRight size={15} aria-hidden />
             </a>
           ) : <span />}
           {p.code && (
-            <a href={p.code} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} source code on GitHub`} className="grid h-9 w-9 place-items-center rounded-full border border-line text-muted transition hover:border-violet/50 hover:text-white">
+            <a href={p.code} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} source code on GitHub`} className="tap-box grid h-9 w-9 place-items-center rounded-full border border-line text-muted transition hover:border-violet/50 hover:text-white">
               {p.demo ? <Github size={16} /> : <ArrowUpRight size={16} />}
             </a>
           )}
@@ -152,7 +152,7 @@ function Card({ p, i }: { p: Project; i: number }) {
               <p className="truncate font-display text-lg font-bold">{p.title}</p>
               <p className="mt-0.5 truncate text-xs text-violet-soft">{p.role ? `${p.role} · ` : ""}Built at {p.company}</p>
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-muted hover:border-violet/50 hover:text-white">
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="tap-box grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-muted hover:border-violet/50 hover:text-white">
               <X size={15} />
             </button>
           </div>
