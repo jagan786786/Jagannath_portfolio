@@ -304,16 +304,16 @@ export default function Home() {
         {/* ------------------------------------------------------------ Skills */}
         <Section id="skills">
           <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
-            <div className="reveal flex flex-col justify-between gap-10 lg:pt-24">
+            <div className="reveal order-2 flex flex-col justify-between gap-10 sm:flex-row sm:items-center lg:order-none lg:flex-col lg:items-stretch lg:pt-24">
               <SkillOrbit icons={orbitIcons} />
-              <figure className="relative rounded-2xl border border-line bg-panel/70 p-6 pt-8">
+              <figure className="relative rounded-2xl border border-line bg-panel/70 p-6 pt-8 sm:flex-1 lg:flex-none">
                 <Quote size={30} className="absolute -top-4 left-5 fill-violet-soft text-violet-soft drop-shadow-[0_0_10px_rgba(124,92,255,0.8)]" aria-hidden />
                 <blockquote className="leading-relaxed text-ink">Models change every few months.<br />Good engineering habits don&apos;t.</blockquote>
                 <span className="mt-4 block h-0.5 w-8 rounded bg-violet" />
               </figure>
             </div>
 
-            <div className="reveal min-w-0">
+            <div className="reveal order-1 min-w-0 lg:order-none">
               <div className="text-center lg:text-left">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-violet/30 bg-violet/10 px-3 py-1 text-xs font-medium text-violet-soft"><Zap size={13} fill="currentColor" aria-hidden /> My Toolbox</span>
                 <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
