@@ -152,9 +152,9 @@ export default function Home() {
               </div>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <a href={site.github} {...ext} aria-label="GitHub" className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-violet/50 hover:text-white"><Github size={18} /></a>
-                <a href={site.linkedin} {...ext} aria-label="LinkedIn" className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-violet/50 hover:text-white"><Linkedin size={18} /></a>
-                <a href={site.leetcode} {...ext} aria-label="LeetCode" className="grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-[#FFA116]/60 hover:text-white">
+                <a href={site.github} {...ext} aria-label="GitHub" className="tap-box grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-violet/50 hover:text-white"><Github size={18} /></a>
+                <a href={site.linkedin} {...ext} aria-label="LinkedIn" className="tap-box grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-violet/50 hover:text-white"><Linkedin size={18} /></a>
+                <a href={site.leetcode} {...ext} aria-label="LeetCode" className="tap-box grid h-10 w-10 place-items-center rounded-xl border border-line bg-white/[0.03] text-muted transition hover:border-[#FFA116]/60 hover:text-white">
                   <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden><path d={brandIcons.leetcode.path} fill="currentColor" /></svg>
                 </a>
                 {site.openToWork && (
@@ -420,16 +420,16 @@ export default function Home() {
             <p className="text-sm font-semibold">Quick links</p>
             <ul className="mt-3 space-y-2 text-sm text-muted">
               {["About", "Projects", "Experience", "Skills", "Contact"].map((l) => (
-                <li key={l}><a href={`#${l.toLowerCase()}`} className="hover:text-ink">{l}</a></li>
+                <li key={l}><a href={`#${l.toLowerCase()}`} className="tap hover:text-ink">{l}</a></li>
               ))}
             </ul>
           </nav>
           <div>
             <p className="text-sm font-semibold">Elsewhere</p>
             <ul className="mt-3 space-y-2 text-sm text-muted">
-              <li><a href={site.github} {...ext} className="inline-flex items-center gap-1 hover:text-ink">GitHub <ArrowUpRight size={13} aria-hidden /></a></li>
-              <li><a href={site.linkedin} {...ext} className="inline-flex items-center gap-1 hover:text-ink">LinkedIn <ArrowUpRight size={13} aria-hidden /></a></li>
-              <li><a href={site.leetcode} {...ext} className="inline-flex items-center gap-1 hover:text-ink">LeetCode <ArrowUpRight size={13} aria-hidden /></a></li>
+              <li><a href={site.github} {...ext} className="tap inline-flex items-center gap-1 hover:text-ink">GitHub <ArrowUpRight size={13} aria-hidden /></a></li>
+              <li><a href={site.linkedin} {...ext} className="tap inline-flex items-center gap-1 hover:text-ink">LinkedIn <ArrowUpRight size={13} aria-hidden /></a></li>
+              <li><a href={site.leetcode} {...ext} className="tap inline-flex items-center gap-1 hover:text-ink">LeetCode <ArrowUpRight size={13} aria-hidden /></a></li>
             </ul>
           </div>
           <div>
