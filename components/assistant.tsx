@@ -35,9 +35,9 @@ export default function Assistant({ greeting, qa, name, avatar }: { greeting: st
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-5 sm:right-5" style={{ marginBottom: "env(safe-area-inset-bottom, 0px)", marginRight: "env(safe-area-inset-right, 0px)" }}>
       {open && (
-        <div role="dialog" aria-label={`Ask ${name}'s AI twin`} className="pop-in flex h-[460px] max-h-[70vh] w-[min(360px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-violet/30 bg-panel/95 shadow-glow backdrop-blur-xl">
+        <div role="dialog" aria-label={`Ask ${name}'s AI twin`} className="pop-in flex h-[460px] max-h-[calc(100svh-7rem)] w-[min(360px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-violet/30 bg-panel/95 shadow-glow backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <div className="flex items-center gap-2.5">
               <Avatar src={avatar} className="h-9 w-9" />
@@ -46,7 +46,7 @@ export default function Assistant({ greeting, qa, name, avatar }: { greeting: st
                 <p className="flex items-center gap-1.5 text-[11px] text-mint"><span className="h-1.5 w-1.5 rounded-full bg-mint" /> Answers from his portfolio</p>
               </div>
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Close chat" className="rounded-lg p-1.5 text-muted hover:bg-white/5 hover:text-ink"><X size={18} /></button>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close chat" className="tap-box rounded-lg p-1.5 text-muted hover:bg-white/5 hover:text-ink"><X size={18} /></button>
           </div>
 
           <div ref={log} className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4 text-sm">
@@ -61,7 +61,7 @@ export default function Assistant({ greeting, qa, name, avatar }: { greeting: st
 
           <div className="flex flex-wrap gap-2 border-t border-line p-3">
             {qa.map((item) => (
-              <button key={item.q} type="button" disabled={busy} onClick={() => ask(item)} className="rounded-full border border-violet/30 bg-violet/10 px-3 py-1.5 text-xs text-violet-soft transition hover:bg-violet/20 disabled:opacity-50">
+              <button key={item.q} type="button" disabled={busy} onClick={() => ask(item)} className="tap-box rounded-full border border-violet/30 bg-violet/10 px-3 py-1.5 text-xs text-violet-soft transition hover:bg-violet/20 disabled:opacity-50">
                 {item.q}
               </button>
             ))}
@@ -74,10 +74,10 @@ export default function Assistant({ greeting, qa, name, avatar }: { greeting: st
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-label={open ? "Close chat" : `Ask ${name}'s AI twin`}
-        className="group flex items-center gap-2 rounded-full border border-violet/40 bg-[#120b2e] py-2 pl-2 pr-4 text-sm font-semibold text-white shadow-glow transition hover:bg-[#1a1040]"
+        className="group flex items-center gap-2 rounded-full border border-violet/40 bg-[#120b2e] p-1.5 text-sm font-semibold text-white shadow-glow transition hover:bg-[#1a1040] md:py-2 md:pl-2 md:pr-4"
       >
         <Avatar src={avatar} className="h-9 w-9" online />
-        {open ? "Close" : "Ask my AI twin"}
+        <span className="hidden md:inline">{open ? "Close" : "Ask my AI twin"}</span>
       </button>
     </div>
   )
