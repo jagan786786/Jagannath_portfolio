@@ -93,7 +93,7 @@ export default function Home() {
       <main className="relative z-[1]">
         {/* ------------------------------------------------------------ Hero */}
         <section id="home" className="hero-fade relative flex min-h-[100svh] items-center overflow-hidden pt-16">
-          <div className="pointer-events-none absolute inset-0 z-[1] hidden lg:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 28%, rgba(5,3,13,0.75) 40%, rgba(5,3,13,0) 56%)" }} />
+          <div className="pointer-events-none absolute inset-0 z-[1] hidden xl:block" style={{ background: "linear-gradient(90deg, #05030d 0%, #05030d 28%, rgba(5,3,13,0.75) 40%, rgba(5,3,13,0) 56%)" }} />
 
           {hero.image ? (
             <>
@@ -106,32 +106,32 @@ export default function Home() {
                 priority
                 posX={0.9}
                 posY={0.4}
-                className="hero-photo absolute inset-y-0 right-0 hidden h-full w-[72%] lg:block"
+                className="hero-photo absolute inset-y-0 right-0 hidden h-full w-[72%] xl:block"
               />
               {/* drifting stars over the dark wall */}
-              <div className="hero-stars pointer-events-none absolute inset-0 hidden lg:block" />
+              <div className="hero-stars pointer-events-none absolute inset-0 hidden xl:block" />
               {/* glass quote board on the wall, left of his head */}
-              <div className="pointer-events-none absolute left-[42%] top-[7%] z-10 hidden w-52 rotate-[-5deg] xl:block">
+              <div className="pointer-events-none absolute left-[42%] top-[12%] z-10 hidden w-52 rotate-[-5deg] xl:block 2xl:top-[9%]">
                 <div className="floaty rounded-2xl border border-violet-soft/40 bg-[#0c0826]/40 px-5 py-4 shadow-[0_0_36px_-8px_rgba(124,92,255,0.7),inset_0_0_20px_rgba(124,92,255,0.15)] backdrop-blur-[2px]">
                   <p className="font-hand text-[24px] leading-[1.1] text-[#e6e0ff]/90">&ldquo;{hero.quote}&rdquo;</p>
                   <p className="mt-2 text-right font-hand text-lg tracking-[0.2em] text-[#e6e0ff]/75">— {site.short.toUpperCase()}</p>
                 </div>
               </div>
               {/* "right now" card on his back, like a sticker on the jacket */}
-              <div className="absolute bottom-[14%] left-[46%] z-10 hidden w-64 rounded-xl border border-white/10 bg-[#0a0720]/80 p-4 backdrop-blur-md lg:block">
+              <div className="absolute bottom-[14%] left-[46%] z-10 hidden w-64 rounded-xl border border-white/10 bg-[#0a0720]/80 p-4 backdrop-blur-md xl:block">
                 <p className="eyebrow !text-[10px]">// right now</p>
                 <p className="mt-2 min-h-[2.5rem] leading-snug"><StatusTicker lines={statusLines} /></p>
               </div>
             </>
           ) : (
             /* Full-bleed illustrated night scene */
-            <NightScene className="pointer-events-none absolute inset-0 hidden lg:block" quote={hero.quote} author={site.short.toUpperCase()} status={statusLines} />
+            <NightScene className="pointer-events-none absolute inset-0 hidden xl:block" quote={hero.quote} author={site.short.toUpperCase()} status={statusLines} />
           )}
 
           <div data-hero-copy className="relative z-10 mx-auto w-full max-w-6xl px-5 py-20 will-change-transform">
             <div className="max-w-2xl">
               <p className="eyebrow"><Typed text="// Hello, I'm" /></p>
-              <h1 className="mt-4 font-display text-6xl font-extrabold leading-none tracking-[-0.04em] sm:text-8xl lg:text-[6.25rem] xl:text-[6.75rem]">
+              <h1 className="mt-4 font-display text-[clamp(2.75rem,15vw,3.75rem)] font-extrabold leading-none tracking-[-0.04em] sm:text-8xl xl:text-[5.75rem] 2xl:text-[6.75rem]">
                 <span className="bg-gradient-to-r from-white via-[#d9d2ff] to-violet bg-clip-text text-transparent">{site.short}</span>
                 <span className="sr-only"> Patro, {site.role}</span>
               </h1>
@@ -140,7 +140,7 @@ export default function Home() {
                 <br />
                 <span className="grad">{hero.headline[1]}</span>
               </p>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted lg:max-w-[31rem]">{hero.bio}</p>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted xl:max-w-[31rem]">{hero.bio}</p>
 
               <div className="mt-9 flex flex-wrap gap-3">
                 <a href="#projects" className="btn-primary">View My Work <ArrowRight size={16} aria-hidden /></a>
@@ -169,7 +169,7 @@ export default function Home() {
                 <Clock timezone={site.timezone} />
               </div>
 
-              <div className="mt-12 lg:hidden">
+              <div className="mt-12 xl:hidden">
                 <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_0_60px_-20px_rgba(124,92,255,0.8)]">
                   {hero.image ? (
                     <HeroPhoto src="/hero-sm.webp" alt={`${site.name} coding at his desk at night`} posX={0.62} posY={0.5} className="relative aspect-[4/3] w-full" />
